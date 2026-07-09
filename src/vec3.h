@@ -97,6 +97,11 @@ class vec3 {
 
 
 
+// point3 is an alias of vec3 for geometric clarity.
+using point3 = vec3;
+
+
+
 /*
 ==================
     Operators

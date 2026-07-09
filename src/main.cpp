@@ -3,6 +3,9 @@
 #include <string>
 #include <filesystem>
 
+#include "color.h"
+#include "vec3.h"
+
 int display_ppm(){
     //FILE SETUP
     std::string file_name = "display.ppm";
@@ -36,18 +39,8 @@ int display_ppm(){
     for (int row = 0; row < height; row++) {
         std::clog << "\rScanlines remaining: " << (height - row) << ' ' << std::flush;
         for (int col = 0; col < width; col++) {
-
-            // normalize current position into a value between 0.0 - 1.0 
-            double norm_red = static_cast<double>(col) / (width - 1);
-            double norm_green = static_cast<double>(row) / (height - 1);
-            double norm_blue = 0;
-
-            //convert normalized into color value
-            int red = int(255.99 * norm_red);
-            int green = int(255.99 * norm_green);
-            int blue = int(255.99 * norm_blue);
-
-            output_file << red << ' ' <<  green << ' ' << blue << "\n";
+            auto pixel_color = color(double(row)/(width-1), double(col)/(height-1), 0);
+            write_color(output_file, pixel_color);
         }
         output_file << "\n";
     }
@@ -59,7 +52,6 @@ int display_ppm(){
     return 0;
 }
  
-
 
 int main() {
     std::cout << "Ray Tracing Begun" << std::endl;
