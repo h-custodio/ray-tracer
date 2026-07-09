@@ -11,10 +11,10 @@ int display_ppm(){
     std::string file_name = "display.ppm";
 
     // check if we file already existss
-    // if (std::filesystem::exists(file_name)) {
-    //     std::cerr << "Error: " << file_name << " already exists\n";
-    //     return 1;
-    // }
+    if (std::filesystem::exists(file_name)) {
+        std::cerr << "Error: " << file_name << " already exists\n";
+        return 1;
+    }
 
     // tries to open file
     std::ofstream output_file(file_name);
