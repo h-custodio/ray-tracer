@@ -8,14 +8,16 @@ class ray {
         vec3 direction;
 
     public:
-        ray();
-        
+        ray(const point3& o, const vec3& d) {
+            origin = o;
+            direction = d;
+        }
+
+        // getters
+        const point3& origin() { return origin; }
+        const vec3& direction() { return direction; }
+
+        point3 at(float t) { return origin + t * direction; }
+
 };
 
-ray::ray(/* args */) {
-
-}
-
-ray::~ray() {
-
-}
