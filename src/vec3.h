@@ -67,16 +67,16 @@ class vec3 {
         }
 
         // in-place scalar multiplication
-        inline vec3& operator*=(float c) {
-            vec[0] *= c; 
-            vec[1] *= c; 
-            vec[2] *= c; 
+        inline vec3& operator*=(float scalar) {
+            vec[0] *= scalar; 
+            vec[1] *= scalar; 
+            vec[2] *= scalar; 
             return *this;
         }
 
         // in-place scalar division
-        inline vec3& operator/=(float c) {
-            if (c == 0.0f) {
+        inline vec3& operator/=(float scalar) {
+            if (scalar == 0.0f) {
                 throw std::invalid_argument("division by zero");
             }
 
@@ -95,11 +95,8 @@ class vec3 {
 };
 
 
-
-
 // point3 is an alias of vec3 for geometric clarity.
 using point3 = vec3;
-
 
 
 /*
@@ -119,13 +116,13 @@ inline vec3 operator*(const vec3& a, const vec3& b) {
 }
 
 // vector x scalar
-inline vec3 operator*(const vec3& a, float c) {
-    return vec3(c * a.x(), c * a.y(), c * a.z()); 
+inline vec3 operator*(const vec3& a, float scalar) {
+    return vec3(scalar * a.x(), c * a.y(), c * a.z()); 
 }
 
 // scalar x vector
-inline vec3 operator*(float c, const vec3& a) {
-    return a * c;
+inline vec3 operator*(float scalar, const vec3& a) {
+    return a * scalar;
 }
 
 // returns a new vector that is composed of the product of the scalar multiplcation
@@ -133,12 +130,12 @@ inline vec3 operator-(const vec3& a, const vec3& b) {
     return vec3(a.x() - b.x(), a.y() - b.y(), a.z() - b.z()); 
 }
 
-inline vec3 operator/(const vec3& a, float c) {
-    if (std::fabs(c) < 1e-8f) {
+inline vec3 operator/(const vec3& a, float scalar) {
+    if (std::fabs(scalar) < 1e-8f) {
         throw std::invalid_argument("division by zero");
     }
 
-    return a * (1.0f/c);
+    return a * (1.0f / scalar);
 }
 
 inline bool operator==(const vec3& a, const vec3& b) {
