@@ -80,7 +80,7 @@ class vec3 {
                 throw std::invalid_argument("division by zero");
             }
 
-            return *this *= (1.0f / c);
+            return *this *= (1.0f / scalar);
         }
 
         // returns magnitude(aka length) which is v = sqrt(x^2 + y^2 + z^2)
@@ -117,7 +117,7 @@ inline vec3 operator*(const vec3& a, const vec3& b) {
 
 // vector x scalar
 inline vec3 operator*(const vec3& a, float scalar) {
-    return vec3(scalar * a.x(), c * a.y(), c * a.z()); 
+    return vec3(scalar * a.x(), scalar * a.y(), scalar * a.z()); 
 }
 
 // scalar x vector
