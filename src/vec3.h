@@ -6,92 +6,92 @@
 #include <stdexcept>
 
 class vec3 {
-    private:
-        float vec[3];
-    public:
-        // default constructor
-        vec3() {
-            vec[0] = 0.0f;
-            vec[1] = 0.0f;
-            vec[2] = 0.0f;
-        }
-    
-        // constructor
-        vec3(float x, float y, float z) {
-            vec[0] = x;
-            vec[1] = y;
-            vec[2] = z;
-        }
+private:
+    float vec[3];
+public:
+    // default constructor
+    vec3() {
+        vec[0] = 0.0f;
+        vec[1] = 0.0f;
+        vec[2] = 0.0f;
+    }
 
-        // acccess xyz, read only (easier readability)
-        float x() const { return vec[0]; }
-        float y() const { return vec[1]; }
-        float z() const { return vec[2]; }
+    // constructor
+    vec3(float x, float y, float z) {
+        vec[0] = x;
+        vec[1] = y;
+        vec[2] = z;
+    }
 
-        // access xyz, modifiable
-        float& x() { return vec[0]; }
-        float& y() { return vec[1]; }
-        float& z() { return vec[2]; }
+    // acccess xyz, read only (easier readability)
+    float x() const { return vec[0]; }
+    float y() const { return vec[1]; }
+    float z() const { return vec[2]; }
 
-        // acccess xyz via array index, read only
-        float operator[](int i) const {
-            assert(i >= 0 && i < 3 && "i should be 0, 1 or 2");
-            return vec[i];
-        }
+    // access xyz, modifiable
+    float& x() { return vec[0]; }
+    float& y() { return vec[1]; }
+    float& z() { return vec[2]; }
 
-        // acces xyz via array index, modifiable
-        float& operator[](int i) {
-            assert(i >= 0 && i < 3 && "i should be 0, 1 or 2");
-            return vec[i];
-        }
+    // acccess xyz via array index, read only
+    float operator[](int i) const {
+        assert(i >= 0 && i < 3 && "i should be 0, 1 or 2");
+        return vec[i];
+    }
 
-        // negates the vector and returns a new object
-        inline vec3 operator-() const {
-            return vec3(-vec[0], -vec[1], -vec[2]);
-        }
+    // acces xyz via array index, modifiable
+    float& operator[](int i) {
+        assert(i >= 0 && i < 3 && "i should be 0, 1 or 2");
+        return vec[i];
+    }
 
-        // in-place vector addition    
-        inline vec3& operator+=(const vec3& other) {
-            vec[0] += other[0];
-            vec[1] += other[1];
-            vec[2] += other[2];
-            return *this;
-        }
+    // negates the vector and returns a new object
+    inline vec3 operator-() const {
+        return vec3(-vec[0], -vec[1], -vec[2]);
+    }
 
-        // in-place vector subtraction    
-        inline vec3& operator-=(const vec3& other) {
-            vec[0] -= other[0];
-            vec[1] -= other[1];
-            vec[2] -= other[2];
-            return *this;
-        }
+    // in-place vector addition    
+    inline vec3& operator+=(const vec3& other) {
+        vec[0] += other[0];
+        vec[1] += other[1];
+        vec[2] += other[2];
+        return *this;
+    }
 
-        // in-place scalar multiplication
-        inline vec3& operator*=(float scalar) {
-            vec[0] *= scalar; 
-            vec[1] *= scalar; 
-            vec[2] *= scalar; 
-            return *this;
-        }
+    // in-place vector subtraction    
+    inline vec3& operator-=(const vec3& other) {
+        vec[0] -= other[0];
+        vec[1] -= other[1];
+        vec[2] -= other[2];
+        return *this;
+    }
 
-        // in-place scalar division
-        inline vec3& operator/=(float scalar) {
-            if (scalar == 0.0f) {
-                throw std::invalid_argument("division by zero");
-            }
+    // in-place scalar multiplication
+    inline vec3& operator*=(float scalar) {
+        vec[0] *= scalar; 
+        vec[1] *= scalar; 
+        vec[2] *= scalar; 
+        return *this;
+    }
 
-            return *this *= (1.0f / scalar);
+    // in-place scalar division
+    inline vec3& operator/=(float scalar) {
+        if (scalar == 0.0f) {
+            throw std::invalid_argument("division by zero");
         }
 
-        // returns magnitude(aka length) which is v = sqrt(x^2 + y^2 + z^2)
-        inline float magnitude() const {
-            return std::sqrt(vec[0] * vec[0] + vec[1] * vec[1] + vec[2] * vec[2]);
-        }
+        return *this *= (1.0f / scalar);
+    }
 
-        // returns magnitude squared (x^2 + y^2 + z^2), since square root is slower than basic arithmetic
-        inline float magnitude_squared() const {
-            return vec[0] * vec[0] + vec[1] * vec[1] + vec[2] * vec[2];
-        }
+    // returns magnitude(aka length) which is v = sqrt(x^2 + y^2 + z^2)
+    inline float magnitude() const {
+        return std::sqrt(vec[0] * vec[0] + vec[1] * vec[1] + vec[2] * vec[2]);
+    }
+
+    // returns magnitude squared (x^2 + y^2 + z^2), since square root is slower than basic arithmetic
+    inline float magnitude_squared() const {
+        return vec[0] * vec[0] + vec[1] * vec[1] + vec[2] * vec[2];
+    }
 };
 
 
