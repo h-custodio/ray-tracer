@@ -20,12 +20,13 @@ private:
     // Derived State
     int image_height;
     float viewport_width; 
-    vec3 horizontal_vector;
-    vec3 vertical_vector;
+    vec3 viewport_horizontal_vector; // represents the horizontal top edge of your viewport
+    vec3 viewport_vertical_vector; // represents the vertical side edge of your viewport
     vec3 horizontal_pixel_delta;
     vec3 vertical_pixel_delta;
+    point3 first_pixel_location; // represents the very first pixel or position (0, 0) aka top left
 
-    void configure_camerera_state() {
+    void configure_camera_state() {
         image_height =  static_cast<int>(image_width / aspect_ratio);
          // Prevent 0 height
         if (image_height < 1) {
@@ -34,15 +35,20 @@ private:
 
         viewport_width = viewport_height * (static_cast<float>(image_width) / image_height);
 
-        horizontal_vector = vec3(viewport_width, 0, 0);
-        vertical_vector = vec3(0, -viewport_height, 0);
+        viewport_horizontal_vector = vec3(viewport_width, 0, 0);
+        viewport_vertical_vector = vec3(0, -viewport_height, 0);
 
-        horizontal_pixel_delta = horizontal_vector / static_cast<float>(image_width);
-        vertical_pixel_delta = vertical_vector / static_cast<float>(image_height);
+        horizontal_pixel_delta = viewport_horizontal_vector / static_cast<float>(image_width);
+        vertical_pixel_delta = viewport_vertical_vector / static_cast<float>(image_height);
+
+        auto viewport_upper_left = camera_position - vec3(0, 0, focal_length)
+        - viewport_horizontal_vector / 2 - viewport_vertical_vector / 2;
+
+        first_pixel_location = viewport_upper_left + 0.5 * (horizontal_pixel_delta + vertical_pixel_delta);
     }
 public:
     camera() {
-        configure_camerera_state();
+        configure_camera_state();
     }
 
     camera(float a_ratio, int img_width, float vp_height, float f_length, point3 cam_position) {
@@ -51,7 +57,7 @@ public:
         viewport_height = vp_height;
         focal_length = f_length;
         camera_position = cam_position;
-        configure_camerera_state();
+        configure_camera_state();
     }
 
     // Getters for image and viewport dimensions
@@ -63,39 +69,41 @@ public:
     float get_viewport_width() const { return viewport_width; }
 
     // Getters for vectors and deltas
-    vec3 get_horizontal_vector() const { return horizontal_vector; }
-    vec3 get_vertical_vector() const { return vertical_vector; }
+    vec3 get_horizontal_vector() const { return viewport_horizontal_vector; }
+    vec3 get_vertical_vector() const { return viewport_vertical_vector; }
     vec3 get_horizontal_pixel_delta() const { return horizontal_pixel_delta; }
     vec3 get_vertical_pixel_delta() const { return vertical_pixel_delta; }
 
     // Getters for camera properties
     point3 get_camera_position() const { return camera_position; }
     float get_focal_length() const { return focal_length; }        
+    point3 get_first_pixel_location() const { return first_pixel_location; } 
 
     // Setters for image and viewport dimensions
     void set_aspect_ratio(float a_ratio) { 
         aspect_ratio = a_ratio;
-        configure_camerera_state(); 
+        configure_camera_state(); 
     }
 
     void set_image_width(int img_width) { 
         image_width = img_width; 
-        configure_camerera_state(); 
+        configure_camera_state(); 
     }
     
     void set_viewport_height(float vp_height) { 
         viewport_height = vp_height; 
-        configure_camerera_state(); 
+        configure_camera_state(); 
     }
 
     void set_focal_length(float f_length) { 
         focal_length = f_length; 
-        configure_camerera_state(); 
+        configure_camera_state(); 
     }
 
     void set_camera_position(const point3& cam_position) { 
         camera_position = cam_position; 
-        configure_camerera_state(); 
+        configure_camera_state(); 
     }
 
 };
+
