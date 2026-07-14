@@ -31,7 +31,7 @@ int display_ppm(){
     }
 
     // tries to open file
-    std::ofstream output_file(file_name);
+    std::ofstream output_file(file_name, std::ios::binary);
     if (!output_file.is_open()) {
         std::cerr << "Error opening the file\n";
         return 1;
@@ -43,8 +43,8 @@ int display_ppm(){
     // The highest value a color channel can have. 256 possible intensities (0 to 255) for each color.
     int max_color_value = 255;
 
-    // prints the P3 header to signify ppm format 
-    output_file << "P3\n"; 
+    // prints the P6 header to signify ppm format 
+    output_file << "P6\n"; 
     output_file << width << ' ' << height << "\n";
     output_file << max_color_value << "\n";
 
@@ -53,10 +53,9 @@ int display_ppm(){
     for (int row = 0; row < height; row++) {
         std::clog << "\rScanlines remaining: " << (height - row) << ' ' << std::flush;
         for (int col = 0; col < width; col++) {
-            auto pixel_color = color(double(row)/(width-1), double(col)/(height-1), 0);
+            auto pixel_color = color(float(row)/(width-1), float(col)/(height-1), 0);
             write_color(output_file, pixel_color);
         }
-        output_file << "\n";
     }
 
     std::clog << "\rDone!                 \n";

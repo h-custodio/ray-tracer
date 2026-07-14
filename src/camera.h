@@ -57,8 +57,12 @@ public:
     float get_focal_length() const { return focal_length; }        
 
     // Setters for image and viewport dimensions
-    void set_aspect_ratio(float ratio) { 
-        aspect_ratio = ratio; 
+    void set_aspect_ratio(float width, float height) { 
+        if (height == 0.0f) {
+            throw std::invalid_argument("division by zero");
+        }
+
+        aspect_ratio = width / height; 
         configure_camerera_state(); 
     }
 

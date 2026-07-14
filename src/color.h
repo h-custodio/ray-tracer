@@ -11,11 +11,14 @@ void write_color(std::ostream& out, const color& pixel_color) {
     auto g = pixel_color.y();
     auto b = pixel_color.z();
 
-    // Translate the [0,1] component values to the byte range [0,255].
-    int red_byte = int(255.999 * r);
-    int green_byte = int(255.999 * g);
-    int blue_byte = int(255.999 * b);
+    // translate the [0,1] component values to the byte range [0,255].
+    // turns into hexadecimal form because P6 is being used
+    unsigned char red_byte   = static_cast<unsigned char>(255.999 * r);
+    unsigned char green_byte = static_cast<unsigned char>(255.999 * g);
+    unsigned char blue_byte  = static_cast<unsigned char>(255.999 * b);
 
     // Write out the pixel color components.
-    out << red_byte << ' ' << green_byte << ' ' << blue_byte << '\n';
+    out.put(red_byte);
+    out.put(green_byte);
+    out.put(blue_byte);
 }
