@@ -6,14 +6,14 @@
 // y-axis goes up, 
 // x-axis goes right, 
 // negative z-axis points to the direction we are looking
-class Camera {
+class camera {
 private: 
     // Core data (defaulted for scene setup ease)
     // default 16:9 ratio for now
     // int is used for pixels because we need whole pixels
     float aspect_ratio = 16.0f / 9.0f;
     int image_width = 400;
-    float viewport_height = 1.0f; // have the viewport height maintain the aspect ratio
+    float viewport_height = 2.0f; // have the viewport height maintain the aspect ratio
     float focal_length = 1.0f;
     point3 camera_position = point3(0, 0, 0); // defaulted at relative center, but mathetmatically at (0, 0 , 0)
 
@@ -27,7 +27,10 @@ private:
 
     void configure_camerera_state() {
         image_height =  static_cast<int>(image_width / aspect_ratio);
-        image_height = (image_height < 1) ? 1 : image_height; // Prevent 0 height
+         // Prevent 0 height
+        if (image_height < 1) {
+            image_height = 1;
+        }
 
         viewport_width = viewport_height * (static_cast<float>(image_width) / image_height);
 
@@ -38,6 +41,19 @@ private:
         vertical_pixel_delta = vertical_vector / static_cast<float>(image_height);
     }
 public:
+    camera() {
+        configure_camerera_state();
+    }
+
+    camera(float a_ratio, int img_width, float vp_height, float f_length, point3 cam_position) {
+        aspect_ratio = a_ratio;
+        image_width = img_width;
+        viewport_height = vp_height;
+        focal_length = f_length;
+        camera_position = cam_position;
+        configure_camerera_state();
+    }
+
     // Getters for image and viewport dimensions
     float get_aspect_ratio() const { return aspect_ratio; }
     int get_image_width() const { return image_width; }
@@ -57,32 +73,29 @@ public:
     float get_focal_length() const { return focal_length; }        
 
     // Setters for image and viewport dimensions
-    void set_aspect_ratio(float width, float height) { 
-        if (height == 0.0f) {
-            throw std::invalid_argument("division by zero");
-        }
-
-        aspect_ratio = width / height; 
+    void set_aspect_ratio(float a_ratio) { 
+        aspect_ratio = a_ratio;
         configure_camerera_state(); 
     }
 
-    void set_image_width(int width) { 
-        image_width = width; 
+    void set_image_width(int img_width) { 
+        image_width = img_width; 
         configure_camerera_state(); 
     }
     
-    void set_viewport_height(float height) { 
-        viewport_height = height; 
+    void set_viewport_height(float vp_height) { 
+        viewport_height = vp_height; 
         configure_camerera_state(); 
     }
 
-    void set_camera_position(const point3& position) { 
-        camera_position = position; 
+    void set_focal_length(float f_length) { 
+        focal_length = f_length; 
         configure_camerera_state(); 
     }
 
-    void set_focal_length(float length) { 
-        focal_length = length; 
+    void set_camera_position(const point3& cam_position) { 
+        camera_position = cam_position; 
         configure_camerera_state(); 
     }
+
 };
