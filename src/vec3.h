@@ -45,7 +45,7 @@ public:
         return vec[i];
     }
 
-    // negates the vector and returns a new object
+    // negates the vector and returns a object
     inline vec3 operator-() const {
         return vec3(-vec[0], -vec[1], -vec[2]);
     }
@@ -105,7 +105,7 @@ using point3 = vec3;
 ==================
 */
 
-// returns a new object that is composed of the sum of the vector addition
+// returns a object that is composed of the sum of the vector addition
 inline vec3 operator+(const vec3& a, const vec3& b) {
     return vec3(a.x() + b.x(), a.y() + b.y(), a.z() + b.z()); 
 }
@@ -125,7 +125,7 @@ inline vec3 operator*(float scalar, const vec3& a) {
     return a * scalar;
 }
 
-// returns a new vector that is composed of the product of the scalar multiplcation
+// returns a vector that is composed of the product of the scalar multiplcation
 inline vec3 operator-(const vec3& a, const vec3& b) {
     return vec3(a.x() - b.x(), a.y() - b.y(), a.z() - b.z()); 
 }
@@ -162,7 +162,7 @@ inline std::ostream& operator<<(std::ostream& out, const vec3& a) {
 ==================
 */
 
-// creates a new normalized vector
+// creates a normalized vector
 inline vec3 normalize(const vec3& a) {
     float mag = a.magnitude();
     
@@ -179,7 +179,7 @@ inline float dot_product(const vec3& a, const vec3& b) {
     return a.x() * b.x() + a.y() * b.y() + a.z() * b.z();
 }
 
-// returns new vector 
+// returns vector 
 // a x b = (ay * bz - az * by, az * bx - ax * bz, ax * by - ay * bx)
 inline vec3 cross_product(const vec3& a, const vec3& b) {
     return vec3(
