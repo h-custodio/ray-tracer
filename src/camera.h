@@ -117,10 +117,10 @@ public:
         std::string file_name = "display.ppm";
 
         // check if we file already existss
-        // if (std::filesystem::exists(file_name)) {
-        //     std::cerr << "Error: " << file_name << " already exists\n";
-        //     return 1;
-        // }
+        if (std::filesystem::exists(file_name)) {
+            std::cerr << "Error: " << file_name << " already exists\n";
+            return 1;
+        }
 
         // tries to open file
         std::ofstream output_file(file_name, std::ios::binary);
@@ -130,23 +130,21 @@ public:
         }
 
         // HEADER SETUP
-        // dimensions of the image in pixels (default prefixed value for now)
-        int width = 256, height = 256;
         // the highest value a color channel can have. 256 possible intensities (0 to 255) for each color.
         int max_color_value = 255;
 
         // prints the P6 header to signify ppm format 
         output_file << "P6\n"; 
-        output_file << width << ' ' << height << "\n";
+        output_file << image_width << ' ' << image_height << "\n";
         output_file << max_color_value << "\n";
 
         std::cout << "Setup complete\n"; 
 
         // RENDER PIXEL GRID
-        for (int row = 0; row < height; row++) {
-            std::clog << "\rScanlines remaining: " << (height - row) << ' ' << std::flush;
+        for (int row = 0; row < image_height; row++) {
+            std::clog << "\rScanlines remaining: " << (image_height - row) << ' ' << std::flush;
 
-            for (int col = 0; col < width; col++) {
+            for (int col = 0; col < image_width; col++) {
                 // initialize pixel positioning
                 auto pixel_center = get_first_pixel_location() + 
                 (col * get_horizontal_pixel_delta()) + (row * get_vertical_pixel_delta());
@@ -154,7 +152,6 @@ public:
                 // initialize ray
                 auto ray_direction = pixel_center - get_camera_position();
                 ray r(get_camera_position(), ray_direction);
-
 
                 color pixel_color = ray_color(r);
                 write_color(output_file, pixel_color);
