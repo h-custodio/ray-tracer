@@ -13,9 +13,9 @@ public:
         direction = d;
     }
 
-    // getters
-    const point3& origin() { return origin; }
-    const vec3& direction() { return direction; }
+    // getters, read only
+    const auto& get_origin() const { return origin; }
+    const auto& get_direction() const { return direction; }
 
     point3 at(float t) { return origin + t * direction; }
 };

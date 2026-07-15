@@ -1,6 +1,11 @@
 #pragma once
 
+#include <filesystem>
+
+
 #include "vec3.h"
+#include "color.h"
+#include "ray.h"
 
 // coordinate system convention: right-handed coordinates
 // y-axis goes up, 
@@ -105,5 +110,74 @@ public:
         configure_camera_state(); 
     }
 
+    int render() {
+        configure_camera_state();
+        
+        //FILE SETUP
+        std::string file_name = "display.ppm";
+
+        // check if we file already existss
+        // if (std::filesystem::exists(file_name)) {
+        //     std::cerr << "Error: " << file_name << " already exists\n";
+        //     return 1;
+        // }
+
+        // tries to open file
+        std::ofstream output_file(file_name, std::ios::binary);
+        if (!output_file.is_open()) {
+            std::cerr << "Error opening the file\n";
+            return 1;
+        }
+
+        // HEADER SETUP
+        // dimensions of the image in pixels (default prefixed value for now)
+        int width = 256, height = 256;
+        // the highest value a color channel can have. 256 possible intensities (0 to 255) for each color.
+        int max_color_value = 255;
+
+        // prints the P6 header to signify ppm format 
+        output_file << "P6\n"; 
+        output_file << width << ' ' << height << "\n";
+        output_file << max_color_value << "\n";
+
+        std::cout << "Setup complete\n"; 
+
+        // RENDER PIXEL GRID
+        for (int row = 0; row < height; row++) {
+            std::clog << "\rScanlines remaining: " << (height - row) << ' ' << std::flush;
+
+            for (int col = 0; col < width; col++) {
+                // initialize pixel positioning
+                auto pixel_center = get_first_pixel_location() + 
+                (col * get_horizontal_pixel_delta()) + (row * get_vertical_pixel_delta());
+                
+                // initialize ray
+                auto ray_direction = pixel_center - get_camera_position();
+                ray r(get_camera_position(), ray_direction);
+
+
+                color pixel_color = ray_color(r);
+                write_color(output_file, pixel_color);
+            }
+        }
+
+        std::clog << "\rDone!                 \n";
+
+        // close the file
+        output_file.close();
+        return 0;
+    }
+
+    color ray_color(const ray& r) {
+        auto direction_unit_vector = normalize(r.get_direction());
+        auto a = 0.5f * (direction_unit_vector.y() + 1);
+        //                  startValue                    endValue
+        return (1.0f - a) * color(1.0f, 1.0f, 1.0f) + a * color(0.5f, 0.7f, 1.0f);
+    }
 };
+
+
+
+
+ 
 

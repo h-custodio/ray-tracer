@@ -87,11 +87,6 @@ public:
     inline float magnitude() const {
         return std::sqrt(vec[0] * vec[0] + vec[1] * vec[1] + vec[2] * vec[2]);
     }
-
-    // returns magnitude squared (x^2 + y^2 + z^2), since square root is slower than basic arithmetic
-    inline float magnitude_squared() const {
-        return vec[0] * vec[0] + vec[1] * vec[1] + vec[2] * vec[2];
-    }
 };
 
 
@@ -162,18 +157,6 @@ inline std::ostream& operator<<(std::ostream& out, const vec3& a) {
 ==================
 */
 
-// creates a normalized vector
-inline vec3 normalize(const vec3& a) {
-    float mag = a.magnitude();
-    
-    // avoids zero division, xyz are 0
-    if (mag == 0) {
-        return vec3();
-    }
-
-    return vec3(a.x() / mag, a.y() / mag, a.z() / mag);
-}
-
 // a . b = ax * bx + ay * by + az * bz 
 inline float dot_product(const vec3& a, const vec3& b) {
     return a.x() * b.x() + a.y() * b.y() + a.z() * b.z();
@@ -186,4 +169,16 @@ inline vec3 cross_product(const vec3& a, const vec3& b) {
         a.y() * b.z() - a.z() * b.y(), 
         a.z() * b.x() - a.x() * b.z(), 
         a.x() * b.y() - a.y() * b.x());
+}
+
+// creates a normalized vector
+inline vec3 normalize(const vec3& v) {
+    float mag = v.magnitude();
+    
+    // avoids zero division, xyz are 0
+    if (mag == 0.0f) {
+        return vec3();
+    }
+
+    return v / mag;
 }

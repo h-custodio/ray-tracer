@@ -13,7 +13,7 @@ void write_color(std::ostream& out, const color& pixel_color) {
 
     // translate the [0,1] component values to the byte range [0,255].
     // turns into hexadecimal form because P6 is being used
-    unsigned char red_byte   = static_cast<unsigned char>(255.999 * r);
+    unsigned char red_byte = static_cast<unsigned char>(255.999 * r);
     unsigned char green_byte = static_cast<unsigned char>(255.999 * g);
     unsigned char blue_byte  = static_cast<unsigned char>(255.999 * b);
 
