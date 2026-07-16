@@ -1,10 +1,16 @@
 #include <iostream>
 #include <fstream> 
 #include <string>
+#include <cmath>
 
 #include "vec3.h"
 #include "ray.h"
 #include "camera.h"
+
+
+
+
+
 
 
 int main() {
@@ -14,4 +20,5 @@ int main() {
     std::cout << cam.render();
     return 0;
 }
+
 

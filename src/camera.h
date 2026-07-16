@@ -34,9 +34,7 @@ private:
     void configure_camera_state() {
         image_height =  static_cast<int>(image_width / aspect_ratio);
          // Prevent 0 height
-        if (image_height < 1) {
-            image_height = 1;
-        }
+        image_height = (image_height < 1) ? 1 : image_height;
 
         viewport_width = viewport_height * (static_cast<float>(image_width) / image_height);
 
@@ -110,6 +108,58 @@ public:
         configure_camera_state(); 
     }
 
+
+    int total_roots(auto a, auto b ,auto c) {
+        auto discriminant = b * b - 4 * a * c;
+
+        // negative square root
+        if (discriminant < 0) {
+            return 0;
+        }
+
+        auto sol1 = (-b + std::sqrt(discriminant)) / (2*a);
+        auto sol2 = (-b - std::sqrt(discriminant)) / (2*a);
+
+        if (sol1 < 0 && sol2 < 0) {
+            return 0;
+        }
+        if (discriminant == 0) {
+            return 1;
+        } else {
+            return 2;
+        }
+    }
+    
+
+    // t^2d ⋅ d − 2td ⋅ (C − Q) + (C − Q) ⋅ (C − Q) − r^2 = 0
+    bool hittable_sphere(const point3& center, float radius, const ray& r) {
+        // hardcoded sphere initialization for testing
+        vec3 center_sphere = center - r.get_origin();
+
+        auto d = r.get_direction();
+        auto q = r.get_origin();
+        auto cen = center; 
+        auto q_cen = q - cen;
+        
+        float a = dot_product(d, d); 
+        auto b = dot_product(q_cen, 2 * d);
+        auto c = dot_product(q_cen, q_cen) - radius * radius;
+
+        auto result = total_roots(a, b, c);
+
+        return (result == 0) ? false : true; 
+    }
+
+    color ray_color(const ray& r) {
+        if (hittable_sphere(point3(0,0,-1), 0.5, r))
+            return color(1, 0, 0);    
+
+        auto direction_unit_vector = normalize(r.get_direction());
+        auto a = 0.5f * (direction_unit_vector.y() + 1);
+        //                  startValue                    endValue
+        return (1.0f - a) * color(1.0f, 1.0f, 1.0f) + a * color(0.5f, 0.7f, 1.0f);
+    }
+
     int render() {
         configure_camera_state();
         
@@ -164,17 +214,8 @@ public:
         output_file.close();
         return 0;
     }
-
-    color ray_color(const ray& r) {
-        auto direction_unit_vector = normalize(r.get_direction());
-        auto a = 0.5f * (direction_unit_vector.y() + 1);
-        //                  startValue                    endValue
-        return (1.0f - a) * color(1.0f, 1.0f, 1.0f) + a * color(0.5f, 0.7f, 1.0f);
-    }
 };
 
 
 
-
- 
 
