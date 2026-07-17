@@ -132,7 +132,7 @@ public:
     
 
     // t^2d ⋅ d − 2td ⋅ (C − Q) + (C − Q) ⋅ (C − Q) − r^2 = 0
-    bool hittable_sphere(const point3& center, float radius, const ray& r) {
+    float hittable_sphere(const point3& center, float radius, const ray& r) {
         // hardcoded sphere initialization for testing
         vec3 center_sphere = center - r.get_origin();
 
@@ -142,8 +142,8 @@ public:
         auto q_cen = q - cen;
         
         float a = dot_product(d, d); 
-        auto b = dot_product(q_cen, 2 * d);
-        auto c = dot_product(q_cen, q_cen) - radius * radius;
+        float b = dot_product(q_cen, 2 * d);
+        float c = dot_product(q_cen, q_cen) - radius * radius;
 
         auto result = total_roots(a, b, c);
 
