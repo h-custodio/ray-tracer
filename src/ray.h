@@ -17,6 +17,6 @@ public:
     const auto& get_origin() const { return origin; }
     const auto& get_direction() const { return direction; }
 
-    point3 at(float t) { return origin + t * direction; }
+    point3 at(float t) const { return origin + t * direction; }
 };
 

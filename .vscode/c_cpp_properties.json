@@ -1,19 +1,15 @@
 {
     "configurations": [
         {
-            "name": "Win32",
+            "name": "Mac",
             "includePath": [
                 "${workspaceFolder}/**"
             ],
-            "defines": [
-                "_DEBUG",
-                "UNICODE",
-                "_UNICODE"
-            ],
-            "compilerPath": "C:\\msys64\\ucrt64\\bin\\gcc.exe",
+            "defines": [],
+            "compilerPath": "/usr/bin/clang",
             "cStandard": "c17",
-            "cppStandard": "c++23",
-            "intelliSenseMode": "windows-gcc-x64"
+            "cppStandard": "c++20",
+            "intelliSenseMode": "macos-clang-arm64"
         }
     ],
     "version": 4

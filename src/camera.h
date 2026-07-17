@@ -109,30 +109,21 @@ public:
     }
 
 
-    int total_roots(auto a, auto b ,auto c) {
+    float quadratic_formula_minus(auto a, auto b ,auto c) {
         auto discriminant = b * b - 4 * a * c;
 
         // negative square root
         if (discriminant < 0) {
-            return 0;
+            return -1.0f;
         }
 
-        auto sol1 = (-b + std::sqrt(discriminant)) / (2*a);
-        auto sol2 = (-b - std::sqrt(discriminant)) / (2*a);
-
-        if (sol1 < 0 && sol2 < 0) {
-            return 0;
-        }
-        if (discriminant == 0) {
-            return 1;
-        } else {
-            return 2;
-        }
+        // only - form is used for now to get closest intersection form
+        return (-b - std::sqrt(discriminant)) / (2 * a);
     }
     
 
     // t^2d ⋅ d − 2td ⋅ (C − Q) + (C − Q) ⋅ (C − Q) − r^2 = 0
-    float hittable_sphere(const point3& center, float radius, const ray& r) {
+    float sphere_intersection(const point3& center, float radius, const ray& r) {
         // hardcoded sphere initialization for testing
         vec3 center_sphere = center - r.get_origin();
 
@@ -145,14 +136,24 @@ public:
         float b = dot_product(q_cen, 2 * d);
         float c = dot_product(q_cen, q_cen) - radius * radius;
 
-        auto result = total_roots(a, b, c);
+        auto result = quadratic_formula_minus(a, b, c);
+    
+        return result; 
+    }
 
-        return (result == 0) ? false : true; 
+    inline color normal_to_color(const vec3& unit_vector) {
+        return color((unit_vector.x() + 1) / 2,
+         (unit_vector.y() + 1) / 2, 
+         (unit_vector.z() + 1) / 2);
     }
 
     color ray_color(const ray& r) {
-        if (hittable_sphere(point3(0,0,-1), 0.5, r))
-            return color(1, 0, 0);    
+        auto t_intersection = sphere_intersection(point3(0,0,-1), 0.5, r);
+        // if ray hits something in front of camera
+        if (t_intersection > 0.0f) {
+            vec3 surface_normal = r.at(t_intersection) - vec3(0, 0, -1);
+            return normal_to_color(surface_normal);   
+        } 
 
         auto direction_unit_vector = normalize(r.get_direction());
         auto a = 0.5f * (direction_unit_vector.y() + 1);
@@ -215,7 +216,3 @@ public:
         return 0;
     }
 };
-
-
-
-
