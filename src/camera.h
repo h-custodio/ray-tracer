@@ -119,7 +119,6 @@ public:
         // only - form is used for now to get closest intersection form
         return (-b - std::sqrt(discriminant)) / (2 * a);
     }
-    
 
     // t^2d ⋅ d − 2td ⋅ (C − Q) + (C − Q) ⋅ (C − Q) − r^2 = 0
     float sphere_intersection(const point3& center, float radius, const ray& r) {
@@ -128,8 +127,7 @@ public:
 
         auto d = r.get_direction();
         auto q = r.get_origin();
-        auto cen = center; 
-        auto q_cen = q - cen;
+        auto q_cen = q - center;
         
         float a = dot_product(d, d); 
         float b = dot_product(q_cen, 2 * d);
