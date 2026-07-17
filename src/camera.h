@@ -108,8 +108,7 @@ public:
         configure_camera_state(); 
     }
 
-
-    float quadratic_formula_minus(auto a, auto b ,auto c) {
+    float quadratic_formula_minus(float a, float b , float c) {
         auto discriminant = b * b - 4 * a * c;
 
         // negative square root
