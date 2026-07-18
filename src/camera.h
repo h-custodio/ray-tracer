@@ -1,7 +1,7 @@
 #pragma once
 
 #include <filesystem>
-
+#include <fstream> 
 
 #include "vec3.h"
 #include "color.h"
