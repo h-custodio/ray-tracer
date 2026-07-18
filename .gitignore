@@ -67,7 +67,8 @@ vcpkg_installed/
 # test output & cache
 Testing/
 .cache/
-
-#
+ 
+# local
 .vscode/
 .DS_Store
+*.ppm
