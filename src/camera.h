@@ -108,7 +108,9 @@ public:
         configure_camera_state(); 
     }
 
-    float quadratic_formula_minus(float a, float b , float c) {
+    // Currently only returns the smaller root, which is the closest hit
+    // when the ray originates outside the sphere.
+    float nearest_quadratic_root(float a, float b , float c) {
         auto discriminant = b * b - 4 * a * c;
 
         // negative square root
@@ -133,7 +135,7 @@ public:
         float b = dot_product(q_cen, 2 * d);
         float c = dot_product(q_cen, q_cen) - radius * radius;
 
-        auto result = quadratic_formula_minus(a, b, c);
+        auto result = nearest_quadratic_root(a, b, c);
     
         return result; 
     }
@@ -148,7 +150,7 @@ public:
         auto t_intersection = sphere_intersection(point3(0,0,-1), 0.5, r);
         // if ray hits something in front of camera
         if (t_intersection > 0.0f) {
-            vec3 surface_normal = r.at(t_intersection) - vec3(0, 0, -1);
+            vec3 surface_normal = normalize(r.at(t_intersection) - vec3(0, 0, -1));
             return normal_to_color(surface_normal);   
         } 
 
