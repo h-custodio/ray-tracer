@@ -7,6 +7,7 @@
 #include "color.h"
 #include "ray.h"
 #include "sphere.h"
+#include "hittable.h"
 
 // coordinate system convention: right-handed coordinates
 // y-axis goes up, 
@@ -116,9 +117,12 @@ public:
     }
 
     color ray_color(const ray& r) {
-        auto t_intersection = sphere_intersection(point3(0,0,-1), 0.5, r);
+        hit_record record;
+        sphere s;
+        auto intersecttion = s.hit(r, , , record);
+        //auto t_intersection = hit(point3(0,0,-1), 0.5, r);
         // if ray hits something in front of camera
-        if (t_intersection > 0.0f) {
+        if (intersecttion) {
             vec3 surface_normal = normalize(r.at(t_intersection) - vec3(0, 0, -1));
             return normal_to_color(surface_normal);   
         } 

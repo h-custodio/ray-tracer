@@ -10,7 +10,7 @@ private:
 public:
     sphere(const point3& center, double radius) : center(center), radius(std::fmax(0,radius)) {}
 
-    bool hit(const ray& r, double ray_tmin, double ray_tmax, hit_record& record) const override {
+    bool hit(const ray& r, float ray_tmin, float ray_tmax, hit_record& record) const override {
         vec3 center_sphere = center - r.get_origin();
 
         auto a = r.get_direction().magnitude_squared();
@@ -42,6 +42,9 @@ public:
         record.t_intersect = root;
         record.point = r.at(record.t_intersect);
         record.normal = (record.point - center) / radius;
+
+        vec3 outward_normal = (record.point - center) / radius;
+        record.set_face_normal(r, outward_normal);
     
         return true; 
     }
