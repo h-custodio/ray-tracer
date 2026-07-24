@@ -6,6 +6,7 @@
 #include "vec3.h"
 #include "color.h"
 #include "ray.h"
+#include "sphere.h"
 
 // coordinate system convention: right-handed coordinates
 // y-axis goes up, 
@@ -106,38 +107,6 @@ public:
     void set_camera_position(const point3& cam_position) { 
         camera_position = cam_position; 
         configure_camera_state(); 
-    }
-
-    // Currently only returns the smaller root, which is the closest hit
-    // when the ray originates outside the sphere.
-    float nearest_quadratic_root(float a, float b , float c) {
-        auto discriminant = b * b - 4 * a * c;
-
-        // negative square root
-        if (discriminant < 0) {
-            return -1.0f;
-        }
-
-        // only - form is used for now to get closest intersection form
-        return (-b - std::sqrt(discriminant)) / (2 * a);
-    }
-
-    // t^2d ⋅ d − 2td ⋅ (C − Q) + (C − Q) ⋅ (C − Q) − r^2 = 0
-    float sphere_intersection(const point3& center, float radius, const ray& r) {
-        // hardcoded sphere initialization for testing
-        vec3 center_sphere = center - r.get_origin();
-
-        auto d = r.get_direction();
-        auto q = r.get_origin();
-        auto q_cen = q - center;
-        
-        float a = dot_product(d, d); 
-        float b = dot_product(q_cen, 2 * d);
-        float c = dot_product(q_cen, q_cen) - radius * radius;
-
-        auto result = nearest_quadratic_root(a, b, c);
-    
-        return result; 
     }
 
     inline color normal_to_color(const vec3& unit_vector) {

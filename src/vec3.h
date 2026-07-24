@@ -83,6 +83,11 @@ public:
         return *this *= (1.0f / scalar);
     }
 
+    // returns magnitude squared
+    inline float magnitude_squared() const {
+        return (vec[0] * vec[0] + vec[1] * vec[1] + vec[2] * vec[2]);
+    }
+
     // returns magnitude(aka length) which is v = sqrt(x^2 + y^2 + z^2)
     inline float magnitude() const {
         return std::sqrt(vec[0] * vec[0] + vec[1] * vec[1] + vec[2] * vec[2]);
