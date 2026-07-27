@@ -1,8 +1,9 @@
 #pragma once
 
-#include "ray.h"
 #include <memory>
 #include <vector>
+
+#include "ray.h"
 
 
 class hit_record {

@@ -3,15 +3,7 @@
 #include <cmath>
 #include <iostream>
 #include <limits>
-#include <memory>
 #include <numbers>
-
-// Common Headers
-
-#include "color.h"
-#include "ray.h"
-#include "vec3.h"
-#include "camera.h"
 
 // Constants
 

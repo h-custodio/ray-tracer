@@ -110,19 +110,22 @@ public:
         configure_camera_state(); 
     }
 
-    inline color normal_to_color(const vec3& unit_vector) {
+    color normal_to_color(const vec3& unit_vector) {
         return color((unit_vector.x() + 1) / 2,
-         (unit_vector.y() + 1) / 2, 
-         (unit_vector.z() + 1) / 2);
+            (unit_vector.y() + 1) / 2, 
+            (unit_vector.z() + 1) / 2);
     }
 
     color ray_color(const ray& r) {
         hit_record record;
+        //work in progress
         sphere s;
+        //work in progress
         auto intersecttion = s.hit(r, , , record);
         //auto t_intersection = hit(point3(0,0,-1), 0.5, r);
         // if ray hits something in front of camera
         if (intersecttion) {
+            //work in progress
             vec3 surface_normal = normalize(r.at(record.t_intersection) - vec3(0, 0, -1));
             return normal_to_color(surface_normal);   
         } 
