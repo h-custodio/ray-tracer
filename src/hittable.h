@@ -20,15 +20,17 @@ public:
 
         front_face = dot_product(r.get_direction(), outward_normal) < 0.0f;
         if (front_face) {
-            normal = outward_normal;
+            normal = outward_normal;    //if ray is from outside of object
         } else {
-            normal = -outward_normal;
+            normal = -outward_normal;   //if ray is from inside of object
         }
     }
 };
 
+//hittable abstract class to use for objects that can interact with the ray
 class hittable {
 public:
+    //default destructor
     virtual ~hittable() = default;
 
     virtual bool hit(const ray& r, float ray_tmin, float ray_tmax, hit_record& record) const = 0;
@@ -54,8 +56,11 @@ class hittable_list : public hittable {
         auto current_closest = ray_tmax;
 
         for (const auto& object: objects) {
-            if () {
-                
+            // since object is a shared_ptr, and not an object '->' is used
+            if (object->hit(r, ray_tmin, current_closest, temp_record)) {
+                hit_anything = true;
+                current_closest = temp_record.t_intersect;
+                record = temp_record;
             }
         }
 

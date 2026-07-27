@@ -123,7 +123,7 @@ public:
         //auto t_intersection = hit(point3(0,0,-1), 0.5, r);
         // if ray hits something in front of camera
         if (intersecttion) {
-            vec3 surface_normal = normalize(r.at(t_intersection) - vec3(0, 0, -1));
+            vec3 surface_normal = normalize(r.at(record.t_intersection) - vec3(0, 0, -1));
             return normal_to_color(surface_normal);   
         } 
 
