@@ -4,6 +4,7 @@
 #include <vector>
 
 #include "ray.h"
+#include "interval.h"
 
 
 class hit_record {
@@ -34,7 +35,7 @@ public:
     //default destructor
     virtual ~hittable() = default;
 
-    virtual bool hit(const ray& r, float ray_tmin, float ray_tmax, hit_record& record) const = 0;
+    virtual bool hit(const ray& r, interval ray_t_intersection, hit_record& record) const = 0;
 };
 
 class hittable_list : public hittable {
@@ -52,14 +53,14 @@ public:
         objects.push_back(object);
     }
 
-    bool hit(const ray& r, float ray_tmin, float ray_tmax, hit_record& record) const override {
+    bool hit(const ray& r, interval ray_t_intersection, hit_record& record) const override {
         hit_record temp_record;
         bool hit_anything = false;
-        auto current_closest = ray_tmax;
+        auto current_closest = ray_t_intersection.max;
 
         for (const auto& object: objects) {
             // since object is a shared_ptr, and not an object '->' is used
-            if (object->hit(r, ray_tmin, current_closest, temp_record)) {
+            if (object->hit(r, interval(ray_t_intersection.min, current_closest), temp_record)) {
                 hit_anything = true;
                 current_closest = temp_record.t_intersect;
                 record = temp_record;
