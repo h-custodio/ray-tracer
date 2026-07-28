@@ -38,6 +38,7 @@ public:
 };
 
 class hittable_list : public hittable {
+public:
     std::vector<std::shared_ptr<hittable>> objects;
     
     hittable_list() {};

@@ -8,6 +8,7 @@
 #include "ray.h"
 #include "sphere.h"
 #include "hittable.h"
+#include "utils.h"
 
 // coordinate system convention: right-handed coordinates
 // y-axis goes up, 
@@ -116,27 +117,22 @@ public:
             (unit_vector.z() + 1) / 2);
     }
 
-    color ray_color(const ray& r) {
+    color ray_color(const ray& r, const hittable& world) {
         hit_record record;
-        //work in progress
-        sphere s;
-        //work in progress
-        auto intersecttion = s.hit(r, , , record);
-        //auto t_intersection = hit(point3(0,0,-1), 0.5, r);
         // if ray hits something in front of camera
-        if (intersecttion) {
-            //work in progress
-            vec3 surface_normal = normalize(r.at(record.t_intersection) - vec3(0, 0, -1));
-            return normal_to_color(surface_normal);   
+        if (world.hit(r, 0, infinity, record)) {
+            return  0.5f * (record.normal + color(1,1,1));
         } 
 
         auto direction_unit_vector = normalize(r.get_direction());
         auto a = 0.5f * (direction_unit_vector.y() + 1);
+
         //                  startValue                    endValue
         return (1.0f - a) * color(1.0f, 1.0f, 1.0f) + a * color(0.5f, 0.7f, 1.0f);
     }
 
-    int render() {
+
+    int render(const hittable_list& world) {
         configure_camera_state();
         
         //FILE SETUP
@@ -179,7 +175,7 @@ public:
                 auto ray_direction = pixel_center - get_camera_position();
                 ray r(get_camera_position(), ray_direction);
 
-                color pixel_color = ray_color(r);
+                color pixel_color = ray_color(r, world);
                 write_color(output_file, pixel_color);
             }
         }

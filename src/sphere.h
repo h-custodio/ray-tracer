@@ -7,7 +7,10 @@ private:
     point3 center;
     double radius;
 public:
-    sphere(const point3& center, double radius) : center(center), radius(std::fmax(0,radius)) {}
+    sphere(const point3& cen, double rad) { 
+        center = cen;
+        radius = (std::fmax(0, rad));
+    }
 
     bool hit(const ray& r, float ray_tmin, float ray_tmax, hit_record& record) const override {
         vec3 center_sphere = center - r.get_origin();
@@ -37,7 +40,6 @@ public:
             }
         }
 
-        
         record.t_intersect = root;
         record.point = r.at(record.t_intersect);
         record.normal = (record.point - center) / radius;
