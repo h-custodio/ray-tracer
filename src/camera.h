@@ -120,7 +120,7 @@ public:
     color ray_color(const ray& r, const hittable& world) {
         hit_record record;
         // if ray hits something in front of camera
-        if (world.hit(r, 0, infinity, record)) {
+        if (world.hit(r, interval(0, infinity), record)) {
             return  0.5f * (record.normal + color(1,1,1));
         } 
 
@@ -130,7 +130,6 @@ public:
         //                  startValue                    endValue
         return (1.0f - a) * color(1.0f, 1.0f, 1.0f) + a * color(0.5f, 0.7f, 1.0f);
     }
-
 
     int render(const hittable_list& world) {
         configure_camera_state();

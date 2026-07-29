@@ -56,11 +56,11 @@ public:
     bool hit(const ray& r, interval ray_t_intersection, hit_record& record) const override {
         hit_record temp_record;
         bool hit_anything = false;
-        auto current_closest = ray_t_intersection.max;
+        auto current_closest = ray_t_intersection.get_max();
 
         for (const auto& object: objects) {
             // since object is a shared_ptr, and not an object '->' is used
-            if (object->hit(r, interval(ray_t_intersection.min, current_closest), temp_record)) {
+            if (object->hit(r, interval(ray_t_intersection.get_min(), current_closest), temp_record)) {
                 hit_anything = true;
                 current_closest = temp_record.t_intersect;
                 record = temp_record;

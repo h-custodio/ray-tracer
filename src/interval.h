@@ -17,6 +17,14 @@ public:
         max = maximum;
     }
 
+    float get_min() {
+        return min;
+    }
+
+    float get_max() {
+        return max;
+    }
+
     float interval_size() const {
         return max - min;
     }
@@ -28,4 +36,10 @@ public:
     bool exclusive_contains(float x) {
         return min < x && x < max;
     }
+
+    //constants
+    static const interval empty, universe;
 };
+
+const interval interval::empty    = interval(+infinity, -infinity);
+const interval interval::universe = interval(-infinity, +infinity);
