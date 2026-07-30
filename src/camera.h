@@ -10,15 +10,14 @@
 #include "hittable.h"
 #include "utils.h"
 
-// coordinate system convention: right-handed coordinates
-// y-axis goes up, 
-// x-axis goes right, 
-// negative z-axis points to the direction we are looking
+// Coordinate system convention: right-handed coordinates
+// Y-axis goes up 
+// X-axis goes right 
+// Negative z-axis points to the direction we are looking
 class camera {
 private: 
     // Core data (defaulted for scene setup ease)
-    // default 16:9 ratio for now
-    // int is used for pixels because we need whole pixels
+    // Default 16:9 ratio for now
     float aspect_ratio = 16.0f / 9.0f;
     int image_width = 400;
     float viewport_height = 2.0f; // have the viewport height maintain the aspect ratio
@@ -34,9 +33,10 @@ private:
     vec3 vertical_pixel_delta;
     point3 first_pixel_location; // represents the very first pixel or position (0, 0) aka top left
 
+    // Configures derived state based on core data
     void configure_camera_state() {
         image_height =  static_cast<int>(image_width / aspect_ratio);
-         // Prevent 0 height
+        // Prevent 0 height
         image_height = (image_height < 1) ? 1 : image_height;
 
         viewport_width = viewport_height * (static_cast<float>(image_width) / image_height);
@@ -53,10 +53,12 @@ private:
         first_pixel_location = viewport_upper_left + 0.5 * (horizontal_pixel_delta + vertical_pixel_delta);
     }
 public:
+    // Default constructor with default values
     camera() {
         configure_camera_state();
     }
 
+    // Custom constructor for possible future extensions
     camera(float a_ratio, int img_width, float vp_height, float f_length, point3 cam_position) {
         aspect_ratio = a_ratio;
         image_width = img_width;
@@ -86,30 +88,13 @@ public:
     point3 get_first_pixel_location() const { return first_pixel_location; } 
 
     // Setters for image and viewport dimensions
-    void set_aspect_ratio(float a_ratio) { 
-        aspect_ratio = a_ratio;
-        configure_camera_state(); 
-    }
+    void set_aspect_ratio(float a_ratio) { aspect_ratio = a_ratio; }
+    void set_image_width(int img_width) { image_width = img_width; }
+    void set_viewport_height(float vp_height) { viewport_height = vp_height; }
+    void set_focal_length(float f_length) { focal_length = f_length; }
+    void set_camera_position(const point3& cam_position) { camera_position = cam_position;  }
 
-    void set_image_width(int img_width) { 
-        image_width = img_width; 
-        configure_camera_state(); 
-    }
-    
-    void set_viewport_height(float vp_height) { 
-        viewport_height = vp_height; 
-        configure_camera_state(); 
-    }
-
-    void set_focal_length(float f_length) { 
-        focal_length = f_length; 
-        configure_camera_state(); 
-    }
-
-    void set_camera_position(const point3& cam_position) { 
-        camera_position = cam_position; 
-        configure_camera_state(); 
-    }
+    // Rendering functions
 
     color normal_to_color(const vec3& unit_vector) {
         return color((unit_vector.x() + 1) / 2,
@@ -119,7 +104,8 @@ public:
 
     color ray_color(const ray& r, const hittable& world) {
         hit_record record;
-        // if ray hits something in front of camera
+
+        // If ray hits something in front of camera
         if (world.hit(r, interval(0, infinity), record)) {
             return  0.5f * (record.normal + color(1,1,1));
         } 
@@ -134,43 +120,44 @@ public:
     int render(const hittable_list& world) {
         configure_camera_state();
         
-        //FILE SETUP
+        //File SETUP
         std::string file_name = "display.ppm";
 
-        // check if we file already existss
+        // Check if the file already existss
         if (std::filesystem::exists(file_name)) {
             std::cerr << "Error: " << file_name << " already exists\n";
             return 1;
         }
 
-        // tries to open file
+        // Tries to open file
         std::ofstream output_file(file_name, std::ios::binary);
         if (!output_file.is_open()) {
             std::cerr << "Error opening the file\n";
             return 1;
         }
 
-        // HEADER SETUP
-        // the highest value a color channel can have. 256 possible intensities (0 to 255) for each color.
+        // PPM header setup
+        // The highest value a color channel can have. 256 possible intensities (0 to 255) for each color.
         int max_color_value = 255;
 
-        // prints the P6 header to signify ppm format 
+        // Prints the P6 header to signify ppm format 
         output_file << "P6\n"; 
         output_file << image_width << ' ' << image_height << "\n";
         output_file << max_color_value << "\n";
 
         std::cout << "Setup complete\n"; 
 
-        // RENDER PIXEL GRID
+        // Render pixel grid
         for (int row = 0; row < image_height; row++) {
             std::clog << "\rScanlines remaining: " << (image_height - row) << ' ' << std::flush;
 
             for (int col = 0; col < image_width; col++) {
-                // initialize pixel positioning
+                
+                // Initialize pixel positioning
                 auto pixel_center = get_first_pixel_location() + 
                 (col * get_horizontal_pixel_delta()) + (row * get_vertical_pixel_delta());
                 
-                // initialize ray
+                // Initialize ray
                 auto ray_direction = pixel_center - get_camera_position();
                 ray r(get_camera_position(), ray_direction);
 
@@ -181,7 +168,7 @@ public:
 
         std::clog << "\rDone!                 \n";
 
-        // close the file
+        // Close the PPM file
         output_file.close();
         return 0;
     }
