@@ -5,6 +5,7 @@
 
 class vec3 {
 public:
+    // data member
     float vec[3];
 
     // default constructor, xyz are 0
