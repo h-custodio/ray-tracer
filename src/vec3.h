@@ -13,7 +13,7 @@ public:
     // constructor
     vec3(float x, float y, float z) : vec(x, y, z) {}
 
-    // get xyz, read only (easier readability)
+    // access xyz, read only (easier readability)
     float x() const { return vec[0]; }
     float y() const { return vec[1]; }
     float z() const { return vec[2]; }
