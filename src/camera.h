@@ -110,7 +110,7 @@ public:
             return  0.5f * (record.normal + color(1,1,1));
         } 
 
-        auto direction_unit_vector = normalize(r.get_direction());
+        auto direction_unit_vector = normalize(r.direction);
         auto a = 0.5f * (direction_unit_vector.y() + 1);
 
         //                  startValue                    endValue
