@@ -17,7 +17,6 @@ public:
     // sets the hit_record normal vector
     // outward_normal is assumed to be normalized when passed
     void set_face_normal(const ray& r, const vec3& outward_normal) {
-
         front_face = dot_product(r.direction, outward_normal) < 0.0f;
         if (front_face) {
             normal = outward_normal;    // if ray is from outside of object
@@ -43,13 +42,9 @@ public:
     hittable_list() {};
     hittable_list(std::shared_ptr<hittable> object) { add(object); } 
 
-    void clear() {
-        objects.clear();
-    }
+    void clear() { objects.clear(); }
 
-    void add(std::shared_ptr<hittable> object) {
-        objects.push_back(object);
-    }
+    void add(std::shared_ptr<hittable> object) { objects.push_back(object); }
 
     bool hit(const ray& r, interval rp_intersection, hit_record& record) const override {
         hit_record temp_record;
