@@ -2,15 +2,18 @@
 
 #include "hittable.h"
 
-class  sphere : public hittable {
-private:
-    point3 center;
-    double radius;
+class Sphere : public Hittable {
 public:
-    sphere(const point3& cen, double rad) : center(cen), radius(rad) {}
+    // data members
+    Point3 center;
+    double radius;
 
-    bool hit(const ray& r, interval rp_intersection, hit_record& record) const override {
-        vec3 center_sphere = center - r.origin;
+    // constructor
+    Sphere(const Point3& cen, double rad) : center(cen), radius(rad) {}
+
+    // the hit is detetcted by finding the root(s) via simplified quadratic formula
+    bool hit(const Ray& r, Interval rp_intersection, HitRecord& record) const override {
+        Vec3 center_sphere = center - r.origin;
 
         auto a = r.direction.magnitude_squared();
         auto b = dot_product(r.direction, center_sphere);
@@ -23,7 +26,7 @@ public:
 
         auto sqrt_discriminant = std::sqrt(discriminant);
 
-        // finds nearest root within acceptable range (tmin < t < tmax)
+        // finds nearest root within acceptable interval
         // - form of simplified quadratic formula
         auto root = (b - sqrt_discriminant) / a; 
         if (!rp_intersection.exclusive_contains(root)) {
@@ -35,9 +38,10 @@ public:
             }
         }
 
+        // updates values of hit_record to hold hit instance 
         record.ray_position = root;
         record.point = r.at(record.ray_position);
-        vec3 outward_normal = (record.point - center) / radius;
+        Vec3 outward_normal = (record.point - center) / radius;
         record.set_face_normal(r, outward_normal);
     
         return true; 

@@ -2,16 +2,15 @@
 
 #include "vec3.h"
 
-class ray {
-public:
+struct Ray {
     // data members
-    point3 origin;
-    vec3 direction;
+    Point3 origin;
+    Vec3 direction;
 
     // constructors
-    ray() = default;
-    ray(const point3& o, const vec3& d) : origin(o), direction(d) {}
+    Ray() = default;
+    Ray(const Point3& o, const Vec3& d) : origin(o), direction(d) {}
     
-    point3 at(float t) const { return origin + t * direction; }
+    Point3 at(float t) const { return origin + t * direction; }
 };
 

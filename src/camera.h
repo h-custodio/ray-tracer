@@ -8,13 +8,12 @@
 #include "ray.h"
 #include "sphere.h"
 #include "hittable.h"
-#include "utils.h"
 
 // Coordinate system convention: right-handed coordinates
 // Y-axis goes up 
 // X-axis goes right 
 // Negative z-axis points to the direction we are looking
-class camera {
+class Camera {
 private: 
     // Core data (defaulted for scene setup ease)
     // Default 16:9 ratio for now
@@ -22,16 +21,16 @@ private:
     int image_width = 400;
     float viewport_height = 2.0f; // have the viewport height maintain the aspect ratio
     float focal_length = 1.0f;
-    point3 camera_position = point3(0, 0, 0); // defaulted at relative center, but mathetmatically at (0, 0 , 0)
+    Point3 camera_position = Point3(0, 0, 0); // defaulted at relative center, but mathetmatically at (0, 0 , 0)
 
     // Derived State
     int image_height;
     float viewport_width; 
-    vec3 viewport_horizontal_vector; // represents the horizontal top edge of your viewport
-    vec3 viewport_vertical_vector; // represents the vertical side edge of your viewport
-    vec3 horizontal_pixel_delta;
-    vec3 vertical_pixel_delta;
-    point3 first_pixel_location; // represents the very first pixel or position (0, 0) aka top left
+    Vec3 viewport_horizontal_vector; // the horizontal top edge of your viewport
+    Vec3 viewport_vertical_vector; // the vertical side edge of your viewport
+    Vec3 horizontal_pixel_delta;
+    Vec3 vertical_pixel_delta;
+    Point3 first_pixel_location; // the very first pixel or position (0, 0) aka top left
 
     // Configures derived state based on core data
     void configure_camera_state() {
@@ -41,25 +40,25 @@ private:
 
         viewport_width = viewport_height * (static_cast<float>(image_width) / image_height);
 
-        viewport_horizontal_vector = vec3(viewport_width, 0, 0);
-        viewport_vertical_vector = vec3(0, -viewport_height, 0);
+        viewport_horizontal_vector = Vec3(viewport_width, 0, 0);
+        viewport_vertical_vector = Vec3(0, -viewport_height, 0);
 
         horizontal_pixel_delta = viewport_horizontal_vector / static_cast<float>(image_width);
         vertical_pixel_delta = viewport_vertical_vector / static_cast<float>(image_height);
 
-        auto viewport_upper_left = camera_position - vec3(0, 0, focal_length)
+        auto viewport_upper_left = camera_position - Vec3(0, 0, focal_length)
         - viewport_horizontal_vector / 2 - viewport_vertical_vector / 2;
 
         first_pixel_location = viewport_upper_left + 0.5 * (horizontal_pixel_delta + vertical_pixel_delta);
     }
 public:
     // Default constructor with default values
-    camera() {
+    Camera() {
         configure_camera_state();
     }
 
-    // Custom constructor for possible future extensions
-    camera(float a_ratio, int img_width, float vp_height, float f_length, point3 cam_position) {
+    // constructor
+    Camera(float a_ratio, int img_width, float vp_height, float f_length, Point3 cam_position) {
         aspect_ratio = a_ratio;
         image_width = img_width;
         viewport_height = vp_height;
@@ -68,7 +67,7 @@ public:
         configure_camera_state();
     }
 
-    // Getters for image and viewport dimensions
+    // getters for image and viewport dimensions
     float get_aspect_ratio() const { return aspect_ratio; }
     int get_image_width() const { return image_width; }
     int get_image_height() const { return image_height; }
@@ -76,60 +75,59 @@ public:
     float get_viewport_height() const { return viewport_height; }
     float get_viewport_width() const { return viewport_width; }
 
-    // Getters for vectors and deltas
-    vec3 get_horizontal_vector() const { return viewport_horizontal_vector; }
-    vec3 get_vertical_vector() const { return viewport_vertical_vector; }
-    vec3 get_horizontal_pixel_delta() const { return horizontal_pixel_delta; }
-    vec3 get_vertical_pixel_delta() const { return vertical_pixel_delta; }
+    // getters for vectors and deltas
+    Vec3 get_horizontal_vector() const { return viewport_horizontal_vector; }
+    Vec3 get_vertical_vector() const { return viewport_vertical_vector; }
+    Vec3 get_horizontal_pixel_delta() const { return horizontal_pixel_delta; }
+    Vec3 get_vertical_pixel_delta() const { return vertical_pixel_delta; }
 
-    // Getters for camera properties
-    point3 get_camera_position() const { return camera_position; }
+    // getters for camera properties
+    Point3 get_camera_position() const { return camera_position; }
     float get_focal_length() const { return focal_length; }        
-    point3 get_first_pixel_location() const { return first_pixel_location; } 
+    Point3 get_first_pixel_location() const { return first_pixel_location; } 
 
-    // Setters for image and viewport dimensions
+    // setters for image and viewport dimensions
     void set_aspect_ratio(float a_ratio) { aspect_ratio = a_ratio; }
     void set_image_width(int img_width) { image_width = img_width; }
     void set_viewport_height(float vp_height) { viewport_height = vp_height; }
     void set_focal_length(float f_length) { focal_length = f_length; }
-    void set_camera_position(const point3& cam_position) { camera_position = cam_position;  }
+    void set_camera_position(const Point3& cam_position) { camera_position = cam_position;  }
 
-    // Rendering functions
-
-    color normal_to_color(const vec3& unit_vector) {
-        return color((unit_vector.x() + 1) / 2,
+    // ========== Render Functions ========== //
+    Color normal_to_color(const Vec3& unit_vector) {
+        return Color((unit_vector.x() + 1) / 2,
             (unit_vector.y() + 1) / 2, 
             (unit_vector.z() + 1) / 2);
     }
 
-    color ray_color(const ray& r, const hittable& world) {
-        hit_record record;
+    Color ray_color(const Ray& r, const Hittable& world) {
+        HitRecord record;
 
-        // If ray hits something in front of camera
-        if (world.hit(r, interval(0, infinity), record)) {
-            return  0.5f * (record.normal + color(1,1,1));
+        // if ray hits something in front of camera
+        if (world.hit(r, Interval(0, infinity), record)) {
+            return  0.5f * (record.normal + Color(1,1,1));
         } 
 
         auto direction_unit_vector = normalize(r.direction);
         auto a = 0.5f * (direction_unit_vector.y() + 1);
 
         //                  startValue                    endValue
-        return (1.0f - a) * color(1.0f, 1.0f, 1.0f) + a * color(0.5f, 0.7f, 1.0f);
+        return (1.0f - a) * Color(1.0f, 1.0f, 1.0f) + a * Color(0.5f, 0.7f, 1.0f);
     }
 
-    int render(const hittable_list& world) {
+    int render(const HittableList& world) {
         configure_camera_state();
         
-        //File SETUP
+        // file setup
         std::string file_name = "display.ppm";
 
-        // Check if the file already existss
+        // check if the file already existss
         if (std::filesystem::exists(file_name)) {
             std::cerr << "Error: " << file_name << " already exists\n";
             return 1;
         }
 
-        // Tries to open file
+        // open file
         std::ofstream output_file(file_name, std::ios::binary);
         if (!output_file.is_open()) {
             std::cerr << "Error opening the file\n";
@@ -159,9 +157,9 @@ public:
                 
                 // Initialize ray
                 auto ray_direction = pixel_center - get_camera_position();
-                ray r(get_camera_position(), ray_direction);
+                Ray r(get_camera_position(), ray_direction);
 
-                color pixel_color = ray_color(r, world);
+                Color pixel_color = ray_color(r, world);
                 write_color(output_file, pixel_color);
             }
         }
