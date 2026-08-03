@@ -5,21 +5,21 @@
 class Renderer {
 private:
     Color normal_to_color(const Vec3& unit_vector) {
-        return Color((unit_vector.x() + 1) / 2,
-            (unit_vector.y() + 1) / 2, 
-            (unit_vector.z() + 1) / 2);
+        return Color((unit_vector.x() + 1.0f) / 2.0f,
+            (unit_vector.y() + 1.0f) / 2.0f, 
+            (unit_vector.z() + 1.0f) / 2.0f);
     }
 
     Color ray_color(const Ray& r, const Hittable& world) {
         HitRecord record;
 
         // if ray hits something in front of camera
-        if (world.hit(r, Interval(0, infinity), record)) {
-            return  0.5f * (record.normal + Color(1,1,1));
+        if (world.hit(r, Interval(0.0f, infinity), record)) {
+            return  0.5f * (record.normal + Color(1.0f, 1.0f, 1.0f));
         } 
 
         auto direction_unit_vector = normalize(r.direction);
-        auto a = 0.5f * (direction_unit_vector.y() + 1);
+        auto a = 0.5f * (direction_unit_vector.y() + 1.0f);
 
         //                  startValue                    endValue
         return (1.0f - a) * Color(1.0f, 1.0f, 1.0f) + a * Color(0.5f, 0.7f, 1.0f);
@@ -82,6 +82,6 @@ public:
 };
 
 void setup_default_world(HittableList& world) {
-    world.add(std::make_shared<Sphere>(Point3(0,0,-1), 0.5));
-    world.add(std::make_shared<Sphere>(Point3(0,-100.5,-1), 100));
+    world.add(std::make_shared<Sphere>(Point3(0.0f, 0.0f, -1.0f), 0.5f));
+    world.add(std::make_shared<Sphere>(Point3(0.0f, -100.5f, -1.0f), 100.0f));
 }

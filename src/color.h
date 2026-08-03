@@ -13,9 +13,9 @@ void write_color(std::ostream& out, const Color& pixel_color) {
 
     // translate the [0,1] component values to the byte range [0,255].
     // turns into hexadecimal form because PPM P6 is being used
-    unsigned char red_byte = static_cast<unsigned char>(255.999 * r);
-    unsigned char green_byte = static_cast<unsigned char>(255.999 * g);
-    unsigned char blue_byte  = static_cast<unsigned char>(255.999 * b);
+    unsigned char red_byte = static_cast<unsigned char>(255.999f * r);
+    unsigned char green_byte = static_cast<unsigned char>(255.999f * g);
+    unsigned char blue_byte  = static_cast<unsigned char>(255.999f * b);
 
     // write out the pixel color components.
     out.put(red_byte);

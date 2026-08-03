@@ -21,7 +21,7 @@ private:
     int image_width = 400;
     float viewport_height = 2.0f; // have the viewport height maintain the aspect ratio
     float focal_length = 1.0f;
-    Point3 camera_position = Point3(0, 0, 0); // defaulted at relative center, but mathetmatically at (0, 0 , 0)
+    Point3 camera_position = Point3(0.0f, 0.0f, 0.0f); // defaulted at relative center, but mathetmatically at (0, 0 , 0)
 
     // Derived State
     int image_height;
@@ -40,16 +40,16 @@ private:
 
         viewport_width = viewport_height * (static_cast<float>(image_width) / image_height);
 
-        viewport_horizontal_vector = Vec3(viewport_width, 0, 0);
-        viewport_vertical_vector = Vec3(0, -viewport_height, 0);
+        viewport_horizontal_vector = Vec3(viewport_width, 0.0f, 0.0f);
+        viewport_vertical_vector = Vec3(0.0f, -viewport_height, 0.0f);
 
         horizontal_pixel_delta = viewport_horizontal_vector / static_cast<float>(image_width);
         vertical_pixel_delta = viewport_vertical_vector / static_cast<float>(image_height);
 
         auto viewport_upper_left = camera_position - Vec3(0, 0, focal_length)
-        - viewport_horizontal_vector / 2 - viewport_vertical_vector / 2;
+        - viewport_horizontal_vector / 2.0f - viewport_vertical_vector / 2.0f;
 
-        first_pixel_location = viewport_upper_left + 0.5 * (horizontal_pixel_delta + vertical_pixel_delta);
+        first_pixel_location = viewport_upper_left + 0.5f * (horizontal_pixel_delta + vertical_pixel_delta);
     }
 public:
     // Default constructor with default values
