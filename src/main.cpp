@@ -1,5 +1,5 @@
 
-#include "camera.h"
+#include "render.h"
 
 void setup_default_world(HittableList& world) {
     world.add(std::make_shared<Sphere>(Point3(0,0,-1), 0.5));
@@ -11,7 +11,8 @@ int main() {
     setup_default_world(world);
 
     Camera cam;
-    std::cout << cam.render(world);
+    Renderer ren;
+    std::cout << ren.render(cam, world);
     return 0;
 }
 
