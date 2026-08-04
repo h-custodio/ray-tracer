@@ -29,7 +29,7 @@ public:
         // if the surface normal vector and random unit vector cancel each other,
         // this results zero scatter direction vector, 
         // leading to bad cases like infinities
-        // prevented by making scatter direction just the normal
+        // prevented by making scatter direction just the normal if they cancel out
         if (scatter_direction.near_zero()) {
             scatter_direction = record.normal;
         }

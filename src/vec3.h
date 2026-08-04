@@ -72,7 +72,7 @@ struct Vec3 {
         return std::sqrt(vec[0] * vec[0] + vec[1] * vec[1] + vec[2] * vec[2]);
     }
 
-    // Return true if the vector is close to zero in all dimensions.
+    // return true if the vector is close to zero in all dimensions
     bool near_zero() const {
         auto s = 1e-8;
         return (std::fabs(vec[0]) < s) && (std::fabs(vec[1]) < s) && (std::fabs(vec[2]) < s);
