@@ -4,6 +4,8 @@
 #include <cassert>
 #include <cmath>
 
+#include "utils.h"
+
 struct Vec3 {
     // data member
     float vec[3];
@@ -144,20 +146,19 @@ inline Vec3 random_unit_vector() {
         // checks if magnitude squared is effectively zero
         // and within unit sphere
         if (1e-38f < rv_mag_squared && rv_mag_squared <= 1) {
-            return rv / sqrt(rv_mag_squared); // normalize random vector
+            return rv / std::sqrt(rv_mag_squared); // normalize random vector
         }
     }
 }
 
 inline Vec3 random_on_hemisphere(const Vec3& normal) {
     Vec3 on_unit_sphere = random_unit_vector();
-    auto res = dot_product(normal, on_unit_sphere);
 
     // valid if in the same hemisphere as normal
     if (dot_product(normal, on_unit_sphere) > 0.0f) { 
         return on_unit_sphere;
     }
-    
+
     // invert if inside object
     return -on_unit_sphere;
 }

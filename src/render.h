@@ -1,7 +1,6 @@
 #pragma once
 
 #include "camera.h"
-#include "utils.h"
 
 class Renderer {
 private:
@@ -18,8 +17,11 @@ private:
         HitRecord record;
 
         // if ray hits something in front of camera
-        if (world.hit(r, Interval(0.0f, infinity), record)) {
-            return  0.5f * (record.normal + Color(1.0f, 1.0f, 1.0f));
+        if (world.hit(r, Interval(0.001f, infinity), record)) {
+            Vec3 direction = random_on_hemisphere(record.normal);
+
+            // ray recursively bounces until ray misses an object
+            return 0.5f * ray_color(Ray(record.point, direction), world);
         } 
 
         // sky gradient
@@ -55,11 +57,11 @@ public:
         // file setup
         std::string file_name = "display.ppm";
 
-        // check if the file already existss
-        if (std::filesystem::exists(file_name)) {
-            std::cerr << "Error: " << file_name << " already exists\n";
-            return 1;
-        }
+        // // check if the file already existss
+        // if (std::filesystem::exists(file_name)) {
+        //     std::cerr << "Error: " << file_name << " already exists\n";
+        //     return 1;
+        // }
 
         // open file
         std::ofstream output_file(file_name, std::ios::binary);
