@@ -22,6 +22,7 @@ private:
             return  0.5f * (record.normal + Color(1.0f, 1.0f, 1.0f));
         } 
 
+        // sky gradient
         auto direction_unit_vector = normalize(r.direction);
         auto a = 0.5f * (direction_unit_vector.y() + 1.0f);
 
