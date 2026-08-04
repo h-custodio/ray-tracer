@@ -6,6 +6,7 @@ class Renderer {
 private:
     // data member
     int sample_amount = 200; // amount of rays sampled per pixel, defaulted at 200
+    int max_depth = 10; // maximum amount of times the ray bounces into scene
 
     Color normal_to_color(const Vec3& unit_vector) {
         return Color((unit_vector.x() + 1.0f) / 2.0f,
@@ -13,7 +14,12 @@ private:
             (unit_vector.z() + 1.0f) / 2.0f);
     }
 
-    Color ray_color(const Ray& r, const Hittable& world) {
+    Color ray_color(const Ray& r, const Hittable& world, int depth) {
+        // If we've exceeded the ray bounce limit, no more light is gathered.
+        if (depth <= 0) {
+            return Color(0,0,0);
+        }
+
         HitRecord record;
 
         // if ray hits something in front of camera
@@ -21,7 +27,7 @@ private:
             Vec3 direction = random_on_hemisphere(record.normal);
 
             // ray recursively bounces until ray misses an object
-            return 0.5f * ray_color(Ray(record.point, direction), world);
+            return 0.5f * ray_color(Ray(record.point, direction), world, depth - 1);
         } 
 
         // sky gradient
@@ -47,7 +53,7 @@ private:
             auto ray_direction = pixel_position - cam.get_camera_position();
             Ray r(cam.get_camera_position(), ray_direction);
 
-            color_accumulator += ray_color(r, world);
+            color_accumulator += ray_color(r, world, max_depth);
         }
 
         return color_accumulator;
