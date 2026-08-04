@@ -6,7 +6,7 @@ class Renderer {
 private:
     // data member
     int sample_amount = 200; // amount of rays sampled per pixel, defaulted at 200
-    int max_depth = 10; // maximum amount of times the ray bounces into scene
+    int max_depth = 50; // maximum amount of times the ray bounces into scene
 
     Color normal_to_color(const Vec3& unit_vector) {
         return Color((unit_vector.x() + 1.0f) / 2.0f,
