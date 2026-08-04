@@ -4,6 +4,8 @@
 #include <cassert>
 #include <cmath>
 
+#include "utils.h"
+
 struct Vec3 {
     // data member
     float vec[3];
@@ -121,17 +123,44 @@ inline Vec3 cross_product(const Vec3& a, const Vec3& b) {
         a.x() * b.y() - a.y() * b.x());
 }
 
-// creates a normalized vector aka unit vector
-// xyz values range from -1 to 1
+// creates a normalized vector aka unit vector (magnitude of 1)
+// xyz values range [-1, 1]
 inline Vec3 normalize(const Vec3& v) {
     float mag = v.magnitude();
     
-    // avoids zero division, xyz are 0
-    if (mag == 0.0f) {
-        return Vec3();
-    }
+    assert(mag >= 1e-8f && "avoid close to zero division");
 
     return v / mag;
+}
+
+static Vec3 random_vector(float min, float max) {
+    return Vec3(generate_random(min, max), generate_random(min, max), generate_random(min, max));
+}
+
+inline Vec3 random_unit_vector() {
+    // keep generating random vectors until criteria satisfied
+    while (true) {
+        auto rv = random_vector(-1.0f, 1.0f);
+        auto rv_mag_squared = rv.magnitude_squared();
+
+        // checks if magnitude squared is effectively zero
+        // and within unit sphere
+        if (1e-38f < rv_mag_squared && rv_mag_squared <= 1) {
+            return rv / std::sqrt(rv_mag_squared); // normalize random vector
+        }
+    }
+}
+
+inline Vec3 random_on_hemisphere(const Vec3& normal) {
+    Vec3 on_unit_sphere = random_unit_vector();
+
+    // valid if in the same hemisphere as normal
+    if (dot_product(normal, on_unit_sphere) > 0.0f) { 
+        return on_unit_sphere;
+    }
+
+    // invert if inside object
+    return -on_unit_sphere;
 }
 
 // ========== Alias ========== //

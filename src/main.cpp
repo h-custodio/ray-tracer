@@ -7,7 +7,7 @@ int main() {
 
     Camera cam;
     Renderer ren;
-    std::cout << ren.render(cam, world);
+    ren.render(cam, world);
     return 0;
 }
 

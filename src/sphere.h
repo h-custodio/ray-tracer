@@ -6,7 +6,7 @@ class Sphere : public Hittable {
 public:
     // data members
     Point3 center;
-    double radius;
+    float radius;
 
     // constructor
     Sphere(const Point3& cen, double rad) : center(cen), radius(rad) {}
