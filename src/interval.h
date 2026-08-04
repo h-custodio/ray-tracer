@@ -14,7 +14,18 @@ struct Interval {
     bool contains(float x) const { return min <= x && x <= max; }
     bool exclusive_contains(float x) const { return min < x && x < max; }
 
-    //constants
+    float clamp(float x) const {
+        if (x < min) { 
+            return min;
+        }
+        if (x > max) { 
+            return max;
+        }
+
+        return x;
+    }
+
+    // constants
     static const Interval empty;
     static const Interval universe;
 };

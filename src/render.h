@@ -5,6 +5,9 @@
 
 class Renderer {
 private:
+    // data member
+    int sample_amount = 200; // amount of rays sampled per pixel, defaulted at 200
+
     Color normal_to_color(const Vec3& unit_vector) {
         return Color((unit_vector.x() + 1.0f) / 2.0f,
             (unit_vector.y() + 1.0f) / 2.0f, 
@@ -34,8 +37,8 @@ private:
             auto pixel_position = cam.get_first_pixel_location() 
                 + (col * cam.get_horizontal_pixel_delta()) 
                 + (row * cam.get_vertical_pixel_delta())
-                + (generate_random() * cam.get_horizontal_pixel_delta()) 
-                + (generate_random() * cam.get_vertical_pixel_delta());
+                + (generate_random(-0.5f, 0.5f) * cam.get_horizontal_pixel_delta()) 
+                + (generate_random(-0.5f, 0.5f) * cam.get_vertical_pixel_delta());
         
             // initialize ray
             auto ray_direction = pixel_position - cam.get_camera_position();
@@ -80,8 +83,7 @@ public:
             std::clog << "\rScanlines remaining: " << (cam.get_image_height() - row) << ' ' << std::flush;
 
             for (int col = 0; col < cam.get_image_width(); col++) {
-                
-                int sample_amount = 200;
+
                 Color color_averaged = random_sampling(row, col, sample_amount, cam, world) / sample_amount; 
                
                 write_color(output_file, color_averaged);
