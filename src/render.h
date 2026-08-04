@@ -1,6 +1,7 @@
 #pragma once
 
 #include "camera.h"
+#include "utils.h"
 
 class Renderer {
 private:
@@ -23,6 +24,27 @@ private:
 
         //                  startValue                    endValue
         return (1.0f - a) * Color(1.0f, 1.0f, 1.0f) + a * Color(0.5f, 0.7f, 1.0f);
+    }
+
+    Color random_sampling(int row, int col, int sample_amount, Camera cam, const HittableList& world) {
+        Color color_accumulator;
+        for (int i = 0; i < sample_amount; i++) {
+            // initialize pixel center first then,
+            // randomly offset the xy to get random point within the pixel
+            auto pixel_position = cam.get_first_pixel_location() 
+                + (col * cam.get_horizontal_pixel_delta()) 
+                + (row * cam.get_vertical_pixel_delta())
+                + (generate_random() * cam.get_horizontal_pixel_delta()) 
+                + (generate_random() * cam.get_vertical_pixel_delta());
+        
+            // initialize ray
+            auto ray_direction = pixel_position - cam.get_camera_position();
+            Ray r(cam.get_camera_position(), ray_direction);
+
+            color_accumulator += ray_color(r, world);
+        }
+
+        return color_accumulator;
     }
 public:
     int render(Camera cam, HittableList& world) {        
@@ -59,17 +81,10 @@ public:
 
             for (int col = 0; col < cam.get_image_width(); col++) {
                 
-                // Initialize pixel positioning
-                auto pixel_center = cam.get_first_pixel_location() + 
-                    (col * cam.get_horizontal_pixel_delta()) + 
-                    (row * cam.get_vertical_pixel_delta());
-                
-                // Initialize ray
-                auto ray_direction = pixel_center - cam.get_camera_position();
-                Ray r(cam.get_camera_position(), ray_direction);
-
-                Color pixel_color = ray_color(r, world);
-                write_color(output_file, pixel_color);
+                int sample_amount = 200;
+                Color color_averaged = random_sampling(row, col, sample_amount, cam, world) / sample_amount; 
+               
+                write_color(output_file, color_averaged);
             }
         }
 
@@ -85,3 +100,4 @@ void setup_default_world(HittableList& world) {
     world.add(std::make_shared<Sphere>(Point3(0.0f, 0.0f, -1.0f), 0.5f));
     world.add(std::make_shared<Sphere>(Point3(0.0f, -100.5f, -1.0f), 100.0f));
 }
+

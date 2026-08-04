@@ -2,6 +2,7 @@
 
 #include <iostream>
 #include <cassert>
+#include <cmath>
 
 struct Vec3 {
     // data member
