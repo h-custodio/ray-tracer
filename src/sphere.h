@@ -3,13 +3,16 @@
 #include "hittable.h"
 
 class Sphere : public Hittable {
-public:
+private:
     // data members
     Point3 center;
     float radius;
-
+    std::shared_ptr<Material> mat;
+public:
     // constructor
-    Sphere(const Point3& cen, double rad) : center(cen), radius(rad) {}
+    Sphere(const Point3& center, double radius) : center(center), radius(std::fmax(0,radius)) {
+        // TODO: Initialize the material pointer `mat`.
+    }
 
     // the hit is detetcted by finding the root(s) via simplified quadratic formula
     bool hit(const Ray& r, Interval rp_intersection, HitRecord& record) const override {
@@ -43,6 +46,7 @@ public:
         record.point = r.at(record.ray_position);
         Vec3 outward_normal = (record.point - center) / radius;
         record.set_face_normal(r, outward_normal);
+        record.mat = mat;
     
         return true; 
     }
