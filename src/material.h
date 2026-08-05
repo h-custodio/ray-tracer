@@ -65,7 +65,7 @@ class Dielectric : public Material {
 private:
     float refraction_index;
 public:
-    Dielectric(const Color& albedo, float reflective_index) : refraction_index(refraction_index) {}
+    Dielectric(float refraction_index) : refraction_index(refraction_index) {}
 
     bool scatter(const Ray& r_in, const HitRecord& record, Color& attenuation, Ray& scattered) const override {
         attenuation = Color(1.0f, 1.0f, 1.0f);
