@@ -44,15 +44,20 @@ public:
 class Metal : public Material {
 private:
     Color albedo;
+    float fuzz;
 public:
-    Metal(const Color& albedo) : albedo(albedo) {}
+    Metal(const Color& albedo, float fuzz) : albedo(albedo), fuzz(fuzz < 1 ? fuzz : 1) {}
 
     bool scatter(const Ray& r_in, const HitRecord& record, Color& attenuation, Ray& scattered) const override {
         auto reflection_direction = reflect(r_in.direction, record.normal);
+        // offset reflection by random scaled to fuzz
+        reflection_direction = unit_vector(reflection_direction) + (fuzz * random_unit_vector()); 
 
         scattered = Ray(record.point, reflection_direction);
         attenuation = albedo;
-        return true;
+
+        // only return true if the scatter is above surface
+        return (dot_product(scattered.direction, record.normal) > 0);
     }
 
 };

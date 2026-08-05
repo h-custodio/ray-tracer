@@ -25,6 +25,8 @@ private:
             Ray scattered;
             Color attenuation;
             
+            // if false then the object absorbs the ray, stopping further bounces
+            // The camera learns nothing beyond the point of absorption
             if (record.mat->scatter(r, record, attenuation, scattered)) {
                 // ray recursively bounces until ray misses an object
                 return attenuation * ray_color(scattered, world, depth - 1);
