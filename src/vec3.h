@@ -170,12 +170,25 @@ inline Vec3 random_on_hemisphere(const Vec3& normal) {
 }
 
 // returns vector that represents the direction of ray reflected on metal
-// n is a unit vector
+// n is a normal, which is a unit vector
 inline Vec3 reflect(const Vec3& v, const Vec3& n) {
     // this is the same as v + 2*b
     // where b = -dot_product(v, n) * n; 
-    return v - 2 * dot_product(v, n) * n;}
+    return v - 2 * dot_product(v, n) * n;
+}
 
+inline Vec3 refract(const Vec3& unit_v, const Vec3& n, float eta_over_etap) {
+    auto cos_theta = std::fmin(dot_product(-unit_v, n), 1.0f);
+
+    // refracted ray, R_prime_perpendicular = eta / eta_prime * (R + (-R dot n) * n)
+    // where base R represents ray inound, unit_v
+    Vec3 perpendicular = eta_over_etap * (unit_v + cos_theta * n); 
+
+    // refracted ray, R_prime_parallel = -sqrt(1 - | R_prime_perpendicular | ^ 2 * n)
+    Vec3 parallel = -std::sqrt(std::fabs(1.0f - parallel.magnitude_squared())) * n;
+
+    return perpendicular + parallel;
+}
 
 // ========== Alias ========== //
 

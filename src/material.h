@@ -16,7 +16,6 @@ class Material {
     }
 };
 
-
 class Lambertian : public Material {
 private:
     Color albedo;
@@ -61,3 +60,23 @@ public:
     }
 
 };
+
+class Dielectric : public Material {
+private:
+    float refraction_index;
+public:
+    Dielectric(const Color& albedo, float reflective_index) : refraction_index(refraction_index) {}
+
+    bool scatter(const Ray& r_in, const HitRecord& record, Color& attenuation, Ray& scattered) const override {
+        attenuation = Color(1.0f, 1.0f, 1.0f);
+
+        float ri = record.front_face ? (1.0f / refraction_index) : refraction_index;
+
+        Vec3 unit_direction = unit_vector(r_in.direction);
+        Vec3 refraction = refract(unit_direction, record.normal, ri);
+
+        scattered = Ray(record.point, refraction);
+        return true;
+    }
+};
+
