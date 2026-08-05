@@ -185,7 +185,7 @@ inline Vec3 refract(const Vec3& unit_v, const Vec3& n, float eta_over_etap) {
     Vec3 perpendicular = eta_over_etap * (unit_v + cos_theta * n); 
 
     // refracted ray, R_prime_parallel = -sqrt(1 - | R_prime_perpendicular | ^ 2 * n)
-    Vec3 parallel = -std::sqrt(std::fabs(1.0f - parallel.magnitude_squared())) * n;
+    Vec3 parallel = -std::sqrt(std::fabs(1.0f - perpendicular.magnitude_squared())) * n;
 
     return perpendicular + parallel;
 }
