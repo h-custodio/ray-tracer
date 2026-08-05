@@ -131,7 +131,7 @@ inline Vec3 cross_product(const Vec3& a, const Vec3& b) {
 
 // creates a normalized vector aka unit vector (magnitude of 1)
 // xyz values range [-1, 1]
-inline Vec3 normalize(const Vec3& v) {
+inline Vec3 unit_vector(const Vec3& v) {
     float mag = v.magnitude();
     
     assert(mag >= 1e-8f && "avoid close to zero division");
@@ -152,7 +152,7 @@ inline Vec3 random_unit_vector() {
         // checks if magnitude squared is effectively zero
         // and within unit sphere
         if (1e-38f < rv_mag_squared && rv_mag_squared <= 1) {
-            return rv / std::sqrt(rv_mag_squared); // normalize random vector
+            return rv / std::sqrt(rv_mag_squared); // normalize the random vector
         }
     }
 }
@@ -168,6 +168,13 @@ inline Vec3 random_on_hemisphere(const Vec3& normal) {
     // invert if inside object
     return -on_unit_sphere;
 }
+
+// returns vector that represents the direction of ray reflected on metal
+// n is a unit vector
+inline Vec3 reflect(const Vec3& v, const Vec3& n) {
+    // this is the same as v + 2*b
+    // where b = -dot_product(v, n) * n; 
+    return v - 2 * dot_product(v, n) * n;}
 
 
 // ========== Alias ========== //

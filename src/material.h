@@ -40,3 +40,19 @@ public:
     }
 
 };
+
+class Metal : public Material {
+private:
+    Color albedo;
+public:
+    Metal(const Color& albedo) : albedo(albedo) {}
+
+    bool scatter(const Ray& r_in, const HitRecord& record, Color& attenuation, Ray& scattered) const override {
+        auto reflection_direction = reflect(r_in.direction, record.normal);
+
+        scattered = Ray(record.point, reflection_direction);
+        attenuation = albedo;
+        return true;
+    }
+
+};

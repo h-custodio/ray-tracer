@@ -10,9 +10,8 @@ private:
     std::shared_ptr<Material> mat;
 public:
     // constructor
-    Sphere(const Point3& center, double radius) : center(center), radius(std::fmax(0,radius)) {
-        // TODO: Initialize the material pointer `mat`.
-    }
+    Sphere(const Point3& center, float radius, std::shared_ptr<Material> mat) 
+        : center(center), radius(std::fmax(0,radius)), mat(mat) {}
 
     // the hit is detetcted by finding the root(s) via simplified quadratic formula
     bool hit(const Ray& r, Interval rp_intersection, HitRecord& record) const override {
