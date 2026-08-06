@@ -74,7 +74,7 @@ struct Vec3 {
 
     // return true if the vector is close to zero in all dimensions
     bool near_zero() const {
-        auto s = 1e-8;
+        auto s = 1e-8f;
         return (std::fabs(vec[0]) < s) && (std::fabs(vec[1]) < s) && (std::fabs(vec[2]) < s);
     }
 };

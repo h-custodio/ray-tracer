@@ -9,7 +9,6 @@ inline void setup_default_world(HittableList& world) {
     auto material_bubble = std::make_shared<Dielectric>(1.00f / 1.50f);
     auto material_right  = std::make_shared<Metal>(Color(0.8f, 0.6f, 0.2f), 1.0f);
 
-    // make spheres
     world.add(std::make_shared<Sphere>(Point3( 0.0f, -100.5f, -1.0f), 100.0f, material_ground));
     world.add(std::make_shared<Sphere>(Point3( 0.0f,    0.0f, -1.2f),   0.5f, material_center));
     world.add(std::make_shared<Sphere>(Point3(-1.0f,    0.0f, -1.0f),   0.5f, material_left));

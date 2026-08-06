@@ -67,7 +67,7 @@ private:
 
     // Schlick's approximation for reflectance
     // simplified formula: R_theta = R0 + (1- R0)(1-cos_theta) ^ 5
-    static double reflectance(float one_minus_cos, float r0) {
+    static float reflectance(float one_minus_cos, float r0) {
         auto omc_squared = one_minus_cos * one_minus_cos;
         return r0 + (1.0f - r0) * omc_squared * omc_squared * one_minus_cos;
     }
@@ -84,10 +84,13 @@ public:
         auto sin_theta = std::sqrt(1 - cos_theta * cos_theta);
 
         Vec3 direction;
-
         bool cannot_refract = ri * sin_theta > 1.0f;
+
+        float r0 = (1.0f - ri) / (1.0f + ri);
+        r0 *= r0;
+
         // if it cannot refract
-        if (cannot_refract || reflectance(1.0f - cos_theta, ri) > generate_random(0.0f, 1.0f)) {
+        if (cannot_refract || reflectance(1.0f - cos_theta, r0) > generate_random(0.0f, 1.0f)) {
             direction = reflect(unit_direction, record.normal);
         } else {
             direction = refract(unit_direction, record.normal, ri, cos_theta);
