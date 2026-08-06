@@ -1,5 +1,8 @@
 #pragma once
 
+#include "color.h"
+#include "ray.h"
+#include "hittable.h"
 #include "camera.h"
 #include "material.h"
 
@@ -54,8 +57,9 @@ private:
                 + (generate_random(-0.5f, 0.5f) * cam.get_vertical_pixel_delta());
         
             // initialize ray
-            auto ray_direction = pixel_position - cam.get_camera_position();
-            Ray r(cam.get_camera_position(), ray_direction);
+            auto origin = cam.get_camera_position();
+            auto ray_direction = pixel_position - origin;
+            Ray r(origin, ray_direction);
 
             color_accumulator += ray_color(r, world, max_ray_depth);
         }

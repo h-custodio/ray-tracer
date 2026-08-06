@@ -4,10 +4,7 @@
 #include <fstream> 
 
 #include "vec3.h"
-#include "color.h"
-#include "ray.h"
-#include "sphere.h"
-#include "hittable.h"
+#include "utils.h"
 
 // Coordinate system convention: right-handed coordinates
 // Y-axis goes up 
@@ -17,15 +14,17 @@ class Camera {
 private: 
     // Core data (defaulted for scene setup ease)
     // Default 16:9 ratio for now
-    float aspect_ratio = 16.0f / 9.0f;
+    float aspect_ratio = 16.0f / 9.0f;  // ratio of image width over height
     int image_width = 400;
-    float viewport_height = 2.0f; // have the viewport height maintain the aspect ratio
     float focal_length = 1.0f;
     Point3 camera_position = Point3(0.0f, 0.0f, 0.0f); // defaulted at relative center, but mathetmatically at (0, 0 , 0)
+
+    float vfov = 90; // vertical view angle (field of view)
 
     // Derived State
     int image_height;
     float viewport_width; 
+    float viewport_height;
     Vec3 viewport_horizontal_vector; // the horizontal top edge of your viewport
     Vec3 viewport_vertical_vector; // the vertical side edge of your viewport
     Vec3 horizontal_pixel_delta;
@@ -34,18 +33,25 @@ private:
 
     // Configures derived state based on core data
     void configure_camera_state() {
+        // Image dimensions
         image_height =  static_cast<int>(image_width / aspect_ratio);
-        // Prevent 0 height
-        image_height = (image_height < 1) ? 1 : image_height;
+        image_height = (image_height < 1) ? 1 : image_height;           // Prevent 0 height
 
+        // Viewport dimensions
+        auto theta = degrees_to_radians(vfov);
+        auto h = std::tan(theta / 2);
+        viewport_height = 2 * h * focal_length;
         viewport_width = viewport_height * (static_cast<float>(image_width) / image_height);
 
+        // Viewport vectors
         viewport_horizontal_vector = Vec3(viewport_width, 0.0f, 0.0f);
         viewport_vertical_vector = Vec3(0.0f, -viewport_height, 0.0f);
 
+        // Pixel spacing
         horizontal_pixel_delta = viewport_horizontal_vector / static_cast<float>(image_width);
         vertical_pixel_delta = viewport_vertical_vector / static_cast<float>(image_height);
 
+        // First pixel location
         auto viewport_upper_left = camera_position - Vec3(0, 0, focal_length)
         - viewport_horizontal_vector / 2.0f - viewport_vertical_vector / 2.0f;
 
@@ -68,40 +74,19 @@ public:
     }
 
     // getters for image and viewport dimensions
-    float get_aspect_ratio() const { return aspect_ratio; }
+
     int get_image_width() const { return image_width; }
     int get_image_height() const { return image_height; }
 
-    float get_viewport_height() const { return viewport_height; }
-    float get_viewport_width() const { return viewport_width; }
-
     // getters for vectors and deltas
-    Vec3 get_horizontal_vector() const { return viewport_horizontal_vector; }
-    Vec3 get_vertical_vector() const { return viewport_vertical_vector; }
     Vec3 get_horizontal_pixel_delta() const { return horizontal_pixel_delta; }
     Vec3 get_vertical_pixel_delta() const { return vertical_pixel_delta; }
 
     // getters for camera properties
-    Point3 get_camera_position() const { return camera_position; }
-    float get_focal_length() const { return focal_length; }        
+    Point3 get_camera_position() const { return camera_position; }     
     Point3 get_first_pixel_location() const { return first_pixel_location; } 
 
     // setters for image and viewport dimensions
-    void set_aspect_ratio(float a_ratio) { 
-        aspect_ratio = a_ratio; 
-        configure_camera_state();
-    }
-
-    void set_image_width(int img_width) { 
-        image_width = img_width; 
-        configure_camera_state();
-
-    }
-
-    void set_viewport_height(float vp_height) { 
-        viewport_height = vp_height;
-        configure_camera_state(); 
-    }
 
     void set_focal_length(float f_length) { 
         focal_length = f_length;
