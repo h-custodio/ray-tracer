@@ -77,23 +77,23 @@ public:
     bool scatter(const Ray& r_in, const HitRecord& record, Color& attenuation, Ray& scattered) const override {
         attenuation = Color(1.0f, 1.0f, 1.0f);
 
-        float ri = record.front_face ? (1.0f / refraction_index) : refraction_index;
+        float refraction_ratio = record.front_face ? (1.0f / refraction_index) : refraction_index;
         Vec3 unit_direction = unit_vector(r_in.direction);
 
         auto cos_theta = std::fmin(dot_product(-unit_direction, record.normal), 1.0f);
         auto sin_theta = std::sqrt(1 - cos_theta * cos_theta);
 
         Vec3 direction;
-        bool cannot_refract = ri * sin_theta > 1.0f;
+        bool cannot_refract = refraction_ratio * sin_theta > 1.0f;
 
-        float r0 = (1.0f - ri) / (1.0f + ri);
-        r0 *= r0;
+        float base_reflectance = (1.0f - refraction_ratio) / (1.0f + refraction_ratio);
+        base_reflectance *= base_reflectance;
 
         // if it cannot refract
-        if (cannot_refract || reflectance(1.0f - cos_theta, r0) > generate_random(0.0f, 1.0f)) {
+        if (cannot_refract || reflectance(1.0f - cos_theta, base_reflectance) > generate_random(0.0f, 1.0f)) {
             direction = reflect(unit_direction, record.normal);
         } else {
-            direction = refract(unit_direction, record.normal, ri, cos_theta);
+            direction = refract(unit_direction, record.normal, refraction_ratio, cos_theta);
         }
 
         scattered = Ray(record.point, direction);
