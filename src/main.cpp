@@ -1,5 +1,6 @@
 
 #include "render.h"
+#include "sphere.h"
 
 inline void setup_default_world(HittableList& world) {
     // setup for material coloring
@@ -21,6 +22,8 @@ int main() {
     setup_default_world(world);
 
     Camera cam;
+    cam.set_camera_center(Point3(-2, 2, 1));
+
     Renderer ren;
     ren.render(cam, world);
     return 0;

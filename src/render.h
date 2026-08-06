@@ -57,7 +57,7 @@ private:
                 + (generate_random(-0.5f, 0.5f) * cam.get_vertical_pixel_delta());
         
             // initialize ray
-            auto origin = cam.get_camera_position();
+            auto origin = cam.get_camera_center();
             auto ray_direction = pixel_position - origin;
             Ray r(origin, ray_direction);
 
