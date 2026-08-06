@@ -1,6 +1,7 @@
 #pragma once
 
 #include "camera.h"
+#include "material.h"
 
 // decleration
 inline std::ofstream setup_ppm6(const std::string& file_name, const Camera& cam);
@@ -21,16 +22,22 @@ private:
 
         // if ray hits something in front of camera
         if (world.hit(r, Interval(0.001f, infinity), record)) {
-            Vec3 direction = record.normal + random_unit_vector();
+            Ray scattered;
+            Color attenuation;
+            
+            // if false then the object absorbs the ray, stopping further bounces
+            // The camera learns nothing beyond the point of absorption
+            if (record.mat->scatter(r, record, attenuation, scattered)) {
+                // ray recursively bounces until ray misses an object
+                return attenuation * ray_color(scattered, world, depth - 1);
+            }
 
-            // ray recursively bounces until ray misses an object
-            return 0.5f * ray_color(Ray(record.point, direction), world, depth - 1);
+            return Color(0.0f, 0.0f, 0.0f);
         } 
 
         // sky gradient
-        auto direction_unit_vector = normalize(r.direction);
+        auto direction_unit_vector = unit_vector(r.direction);
         auto a = 0.5f * (direction_unit_vector.y() + 1.0f);
-
         //                  startValue                    endValue
         return (1.0f - a) * Color(1.0f, 1.0f, 1.0f) + a * Color(0.5f, 0.7f, 1.0f);
     }
@@ -88,11 +95,6 @@ public:
         output_file.close();
     }
 };
-
-inline void setup_default_world(HittableList& world) {
-    world.add(std::make_shared<Sphere>(Point3(0.0f, 0.0f, -1.0f), 0.5f));
-    world.add(std::make_shared<Sphere>(Point3(0.0f, -100.5f, -1.0f), 100.0f));
-}
 
 inline std::ofstream setup_ppm6(const std::string& file_name, const Camera& cam) {
     // // check if the file already existss

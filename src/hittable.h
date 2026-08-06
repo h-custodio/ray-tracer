@@ -6,10 +6,14 @@
 #include "ray.h"
 #include "interval.h"
 
+// declaration to avoid circular dependancy
+class Material;
+
 // stores information about one hit aka intersection
 struct HitRecord {
     Point3 point;   // point of hit/intersaction
-    Vec3 normal;    // surface normal 
+    Vec3 normal;    // surface normal
+    std::shared_ptr<Material> mat; 
     float ray_position;  // ray position where the hit occured
     bool front_face;    // is ray from the outside
 

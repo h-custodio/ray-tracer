@@ -71,6 +71,12 @@ struct Vec3 {
     inline float magnitude() const {
         return std::sqrt(vec[0] * vec[0] + vec[1] * vec[1] + vec[2] * vec[2]);
     }
+
+    // return true if the vector is close to zero in all dimensions
+    bool near_zero() const {
+        auto s = 1e-8f;
+        return (std::fabs(vec[0]) < s) && (std::fabs(vec[1]) < s) && (std::fabs(vec[2]) < s);
+    }
 };
 
 // ========== Operators ========== //
@@ -125,7 +131,7 @@ inline Vec3 cross_product(const Vec3& a, const Vec3& b) {
 
 // creates a normalized vector aka unit vector (magnitude of 1)
 // xyz values range [-1, 1]
-inline Vec3 normalize(const Vec3& v) {
+inline Vec3 unit_vector(const Vec3& v) {
     float mag = v.magnitude();
     
     assert(mag >= 1e-8f && "avoid close to zero division");
@@ -146,7 +152,7 @@ inline Vec3 random_unit_vector() {
         // checks if magnitude squared is effectively zero
         // and within unit sphere
         if (1e-38f < rv_mag_squared && rv_mag_squared <= 1) {
-            return rv / std::sqrt(rv_mag_squared); // normalize random vector
+            return rv / std::sqrt(rv_mag_squared); // normalize the random vector
         }
     }
 }
@@ -161,6 +167,25 @@ inline Vec3 random_on_hemisphere(const Vec3& normal) {
 
     // invert if inside object
     return -on_unit_sphere;
+}
+
+// returns vector that represents the direction of ray reflected on metal
+// n is a normal, which is a unit vector
+inline Vec3 reflect(const Vec3& v, const Vec3& n) {
+    // this is the same as v + 2*b
+    // where b = -dot_product(v, n) * n; 
+    return v - 2 * dot_product(v, n) * n;
+}
+
+inline Vec3 refract(const Vec3& unit_v, const Vec3& n, float eta_over_etap, float cos_theta) {
+    // refracted ray, R_prime_perpendicular = eta / eta_prime * (R + (-R dot n) * n)
+    // where base R represents ray inound, unit_v
+    Vec3 perpendicular = eta_over_etap * (unit_v + cos_theta * n); 
+
+    // refracted ray, R_prime_parallel = -sqrt(1 - | R_prime_perpendicular | ^ 2 * n)
+    Vec3 parallel = -std::sqrt(std::fabs(1.0f - perpendicular.magnitude_squared())) * n;
+
+    return perpendicular + parallel;
 }
 
 // ========== Alias ========== //
