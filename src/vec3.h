@@ -177,9 +177,7 @@ inline Vec3 reflect(const Vec3& v, const Vec3& n) {
     return v - 2 * dot_product(v, n) * n;
 }
 
-inline Vec3 refract(const Vec3& unit_v, const Vec3& n, float eta_over_etap) {
-    auto cos_theta = std::fmin(dot_product(-unit_v, n), 1.0f);
-
+inline Vec3 refract(const Vec3& unit_v, const Vec3& n, float eta_over_etap, float cos_theta) {
     // refracted ray, R_prime_perpendicular = eta / eta_prime * (R + (-R dot n) * n)
     // where base R represents ray inound, unit_v
     Vec3 perpendicular = eta_over_etap * (unit_v + cos_theta * n); 

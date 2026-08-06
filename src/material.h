@@ -64,6 +64,13 @@ public:
 class Dielectric : public Material {
 private:
     float refraction_index;
+
+    // Schlick's approximation for reflectance
+    // simplified formula: R_theta = R0 + (1- R0)(1-cos_theta) ^ 5
+    static double reflectance(float one_minus_cos, float r0) {
+        auto omc_squared = one_minus_cos * one_minus_cos;
+        return r0 + (1.0f - r0) * omc_squared * omc_squared * one_minus_cos;
+    }
 public:
     Dielectric(float refraction_index) : refraction_index(refraction_index) {}
 
@@ -71,11 +78,22 @@ public:
         attenuation = Color(1.0f, 1.0f, 1.0f);
 
         float ri = record.front_face ? (1.0f / refraction_index) : refraction_index;
-
         Vec3 unit_direction = unit_vector(r_in.direction);
-        Vec3 refraction = refract(unit_direction, record.normal, ri);
 
-        scattered = Ray(record.point, refraction);
+        auto cos_theta = std::fmin(dot_product(-unit_direction, record.normal), 1.0f);
+        auto sin_theta = std::sqrt(1 - cos_theta * cos_theta);
+
+        Vec3 direction;
+
+        bool cannot_refract = ri * sin_theta > 1.0f;
+        // if it cannot refract
+        if (cannot_refract || reflectance(1.0f - cos_theta, ri) > generate_random(0.0f, 1.0f)) {
+            direction = reflect(unit_direction, record.normal);
+        } else {
+            direction = refract(unit_direction, record.normal, ri, cos_theta);
+        }
+
+        scattered = Ray(record.point, direction);
         return true;
     }
 };
