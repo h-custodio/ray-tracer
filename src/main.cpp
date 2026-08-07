@@ -2,6 +2,13 @@
 #include "render.h"
 #include "sphere.h"
 
+// ==================== UNOPTIMIZED ====================
+//      DO NOT EDIT - REFERENCE IMPLEMENTATION
+// ==================== UNOPTIMIZED ====================
+//      DO NOT EDIT - REFERENCE IMPLEMENTATION
+// ==================== UNOPTIMIZED ====================
+//      DO NOT EDIT - REFERENCE IMPLEMENTATION
+
 
 inline void setup_preset_scene(HittableList& world) {
     auto ground_material = std::make_shared<Lambertian>(Color(0.5f, 0.5f, 0.5f));
