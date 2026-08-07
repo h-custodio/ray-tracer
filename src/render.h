@@ -95,10 +95,6 @@ public:
     std::vector<Color> render(const Camera& cam, const HittableList& world) const {        
         std::vector <Color> framebuffer(cam.get_image_width() * cam.get_image_height());
         
-        // // file setup
-        // std::string file_name = "display.ppm";
-        // auto output_file = setup_ppm6(file_name, cam);
-
         // render pixel grid
         for (int row = 0; row < cam.get_image_height(); row++) {
             std::clog << "\rScanlines remaining: " << (cam.get_image_height() - row) << ' ' << std::flush;
@@ -106,26 +102,20 @@ public:
             for (int col = 0; col < cam.get_image_width(); col++) {
 
                 framebuffer[row * cam.get_image_width() + col] = random_sampling(row, col, cam, world) / samples_per_pixel; 
-                //Color color_averaged = random_sampling(row, col, cam, world) / samples_per_pixel; 
-               
-                // write_color(output_file, color_averaged);
             }
         }
 
         std::clog << "\rDone!                 \n";
 
-        // // Close the PPM file
-        // output_file.close();
         return framebuffer;
     }
 };
 
 inline std::ofstream setup_ppm6(const std::string& file_name, const Camera& cam) {
-    // // check if the file already existss
-    // if (std::filesystem::exists(file_name)) {
-    //     std::cerr << "Error: " << file_name << " already exists\n";
-    //     return 1;
-    // }
+    // check if the file already existss
+    if (std::filesystem::exists(file_name)) {
+        std::cerr << "Error: " << file_name << " already exists\n";
+    }
 
     // open file
     std::ofstream output_file(file_name, std::ios::binary);

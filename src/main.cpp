@@ -138,7 +138,7 @@ int main() {
     double render_fraction = render_seconds / program_seconds;
     double write_fraction = write_output_seconds / program_seconds;
 
-    std::cout << "\n========== Runtime Fractions ==========\n";
+    std::cout << "\n========== Runtime Fractions (Approximate) ==========\n";
 
     std::cout << "Initialization Fraction: "
             << std::fixed << std::setprecision(6)
