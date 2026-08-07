@@ -11,9 +11,7 @@ class Material {
     // record: details about the collision point
     // attenuation: how much of the ray’s energy/color remains after interacting with the material.
     // scattered: this represents the new ray created after the interaction.
-    virtual bool scatter(const Ray& r_in, const HitRecord& record, Color& attenuation, Ray& scattered) const {
-        return false;
-    }
+    virtual bool scatter(const Ray& r_in, const HitRecord& record, Color& attenuation, Ray& scattered) const = 0;
 };
 
 class Lambertian : public Material {
@@ -23,6 +21,9 @@ public:
     Lambertian(const Color& albedo) : albedo(albedo) {}
 
     bool scatter(const Ray& r_in, const HitRecord& record, Color& attenuation, Ray& scattered) const override {
+        // since it's unused
+        (void)r_in;
+
         auto scatter_direction = record.normal + random_unit_vector();
 
         // if the surface normal vector and random unit vector cancel each other,

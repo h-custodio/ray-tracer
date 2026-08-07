@@ -139,7 +139,7 @@ inline Vec3 unit_vector(const Vec3& v) {
     return v / mag;
 }
 
-static Vec3 random_vector(float min, float max) {
+Vec3 random_vector(float min, float max) {
     return Vec3(generate_random(min, max), generate_random(min, max), generate_random(min, max));
 }
 
@@ -186,6 +186,16 @@ inline Vec3 refract(const Vec3& unit_v, const Vec3& n, float eta_over_etap, floa
     Vec3 parallel = -std::sqrt(std::fabs(1.0f - perpendicular.magnitude_squared())) * n;
 
     return perpendicular + parallel;
+}
+
+// repeatedly run until vector is generated within unit disk
+inline Vec3 random_in_unit_disk() {
+    while (true) {
+        auto p = Vec3(generate_random(-1.0f, 1.0f), generate_random(-1.0f, 1.0f), 0.0f);
+        if (p.magnitude_squared() < 1) {
+            return p;
+        }
+    }
 }
 
 // ========== Alias ========== //

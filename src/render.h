@@ -12,9 +12,11 @@ inline std::ofstream setup_ppm6(const std::string& file_name, const Camera& cam)
 class Renderer {
 private:
     // data member
-    int samples_per_pixel; // amount of rays sampled per pixel, defaulted at 200
-    int max_ray_depth; // maximum amount of times the ray bounces into scene, defaulted at 50
+    int samples_per_pixel;  // amount of rays sampled per pixel, defaulted at 200
+    int max_ray_depth;      // maximum amount of times the ray bounces into scene, defaulted at 50
 
+    // ========== Functions ========== //
+    
     Color ray_color(const Ray& r, const Hittable& world, int depth) const {
         // If we've exceeded the ray bounce limit, no more light is gathered.
         if (depth <= 0) {
@@ -45,6 +47,13 @@ private:
         return (1.0f - a) * Color(1.0f, 1.0f, 1.0f) + a * Color(0.5f, 0.7f, 1.0f);
     }
 
+    Point3 defocus_disk_sample(const Camera& cam) const {
+        // Returns a random point in the camera defocus disk.
+        auto p = random_in_unit_disk();
+        return cam.get_camera_center() + (p[0] * cam.get_defocus_disk_horizontal()) + (p[1] * cam.get_defocus_disk_vertical());
+    }
+
+
     Color random_sampling(int row, int col, const Camera& cam, const HittableList& world) const {
         Color color_accumulator;
         for (int i = 0; i < samples_per_pixel; i++) {
@@ -57,9 +66,16 @@ private:
                 + (generate_random(-0.5f, 0.5f) * cam.get_vertical_pixel_delta());
         
             // initialize ray
-            auto origin = cam.get_camera_center();
-            auto ray_direction = pixel_position - origin;
-            Ray r(origin, ray_direction);
+            Point3 ray_origin;
+            if (cam.get_defocus_angle() <= 0.0f) { 
+                ray_origin = cam.get_camera_center();
+            }
+            else {
+                ray_origin = defocus_disk_sample(cam);
+            }
+
+            auto ray_direction = pixel_position - ray_origin;
+            Ray r(ray_origin, ray_direction);
 
             color_accumulator += ray_color(r, world, max_ray_depth);
         }
