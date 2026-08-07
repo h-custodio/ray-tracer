@@ -1,5 +1,6 @@
 #include <chrono>
 #include <iomanip> 
+#include <vector>
 
 #include "render.h"
 #include "sphere.h"
@@ -47,6 +48,11 @@ inline void setup_preset_scene(HittableList& world) {
 }
 
 int main() {
+    auto program_start = std::chrono::steady_clock::now();
+
+    auto init_start = std::chrono::steady_clock::now();
+    std::string file_name = "display.ppm";
+
     HittableList world;
 
     Camera cam (16.0f / 9.0f,               // aspect_ratio 
@@ -60,22 +66,93 @@ int main() {
     // samples_per_pixel = 250
     // max_ray_depth = 25
     Renderer ren(250, 25);
+
+    auto init_end = std::chrono::steady_clock::now();
+
+    auto scene_setup_start = std::chrono::steady_clock::now();
     setup_preset_scene(world);
+    auto scene_setup_end = std::chrono::steady_clock::now();
 
-    auto start = std::chrono::steady_clock::now();
+    auto render_start = std::chrono::steady_clock::now();
+    auto framebuffer = ren.render(cam, world);
+    auto render_end = std::chrono::steady_clock::now();
 
-    ren.render(cam, world);
+    auto write_output_start = std::chrono::steady_clock::now();
+    write_file(framebuffer, "display.ppm", cam);
+    auto write_output_end = std::chrono::steady_clock::now();
 
-    auto end = std::chrono::steady_clock::now();
 
-    auto elapsed = end - start;
+    auto program_end = std::chrono::steady_clock::now();
+
+    /// ========== Print Timings ========== //
+
+    auto program_elapsed = program_end - program_start;
+    auto init_elapsed = init_end - init_start;
+    auto scene_setup_elapsed = scene_setup_end - scene_setup_start;
+    auto render_elapsed = render_end - render_start;
+    auto write_output_elapsed = write_output_end - write_output_start;
+
+    std::cout << "Initialize Time: "
+        << std::fixed << std::setprecision(6)
+        << std::chrono::duration<double>(init_elapsed).count() << " s ("
+        << std::chrono::duration_cast<std::chrono::milliseconds>(init_elapsed).count() << " ms, "
+        << std::chrono::duration_cast<std::chrono::microseconds>(init_elapsed).count() << " us)\n";
+
+    std::cout << "Scene Setup Time: "
+        << std::fixed << std::setprecision(6)
+        << std::chrono::duration<double>(scene_setup_elapsed).count() << " s ("
+        << std::chrono::duration_cast<std::chrono::milliseconds>(scene_setup_elapsed).count() << " ms, "
+        << std::chrono::duration_cast<std::chrono::microseconds>(scene_setup_elapsed).count() << " us)\n";
 
     std::cout << "Render Time: "
         << std::fixed << std::setprecision(6)
-        << std::chrono::duration<double>(elapsed).count() << " s ("
-        << std::chrono::duration_cast<std::chrono::milliseconds>(elapsed).count() << " ms, "
-        << std::chrono::duration_cast<std::chrono::microseconds>(elapsed).count() << " us)\n";
+        << std::chrono::duration<double>(render_elapsed).count() << " s ("
+        << std::chrono::duration_cast<std::chrono::milliseconds>(render_elapsed).count() << " ms, "
+        << std::chrono::duration_cast<std::chrono::microseconds>(render_elapsed).count() << " us)\n";
 
+    std::cout << "Write Output Time: "
+        << std::fixed << std::setprecision(6)
+        << std::chrono::duration<double>(write_output_elapsed).count() << " s ("
+        << std::chrono::duration_cast<std::chrono::milliseconds>(write_output_elapsed).count() << " ms, "
+        << std::chrono::duration_cast<std::chrono::microseconds>(write_output_elapsed).count() << " us)\n";
+
+    std::cout << "Total Time: "
+        << std::fixed << std::setprecision(6)
+        << std::chrono::duration<double>(program_elapsed).count() << " s ("
+        << std::chrono::duration_cast<std::chrono::milliseconds>(program_elapsed).count() << " ms, "
+        << std::chrono::duration_cast<std::chrono::microseconds>(program_elapsed).count() << " us)\n";
+    
+    /// ========== Runtime Fractions ========== //
+    double program_seconds = std::chrono::duration<double>(program_elapsed).count();
+
+    double init_seconds = std::chrono::duration<double>(init_elapsed).count();
+
+    double scene_setup_seconds = std::chrono::duration<double>(scene_setup_elapsed).count();
+
+    double render_seconds = std::chrono::duration<double>(render_elapsed).count();
+
+    double write_output_seconds = std::chrono::duration<double>(write_output_elapsed).count();
+
+    double init_fraction = init_seconds / program_seconds;
+    double scene_fraction = scene_setup_seconds / program_seconds;
+    double render_fraction = render_seconds / program_seconds;
+    double write_fraction = write_output_seconds / program_seconds;
+
+    std::cout << "\n========== Runtime Fractions ==========\n";
+
+    std::cout << "Initialization Fraction: "
+            << std::fixed << std::setprecision(6)
+            << init_fraction * 100 << "%\n";
+
+    std::cout << "Scene Setup Fraction:    "
+            << scene_fraction * 100 << "%\n";
+
+    std::cout << "Render Fraction:         "
+            << render_fraction * 100 << "%\n";
+
+    std::cout << "Write Fraction:         "
+        << write_fraction * 100 << "%\n";
+    
     return 0;
 }
 

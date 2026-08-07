@@ -92,10 +92,12 @@ public:
         }
     }
 
-    void render(const Camera& cam, const HittableList& world) const {        
-        // file setup
-        std::string file_name = "display.ppm";
-        auto output_file = setup_ppm6(file_name, cam);
+    std::vector<Color> render(const Camera& cam, const HittableList& world) const {        
+        std::vector <Color> framebuffer(cam.get_image_width() * cam.get_image_height());
+        
+        // // file setup
+        // std::string file_name = "display.ppm";
+        // auto output_file = setup_ppm6(file_name, cam);
 
         // render pixel grid
         for (int row = 0; row < cam.get_image_height(); row++) {
@@ -103,16 +105,18 @@ public:
 
             for (int col = 0; col < cam.get_image_width(); col++) {
 
-                Color color_averaged = random_sampling(row, col, cam, world) / samples_per_pixel; 
+                framebuffer[row * cam.get_image_width() + col] = random_sampling(row, col, cam, world) / samples_per_pixel; 
+                //Color color_averaged = random_sampling(row, col, cam, world) / samples_per_pixel; 
                
-                write_color(output_file, color_averaged);
+                // write_color(output_file, color_averaged);
             }
         }
 
         std::clog << "\rDone!                 \n";
 
-        // Close the PPM file
-        output_file.close();
+        // // Close the PPM file
+        // output_file.close();
+        return framebuffer;
     }
 };
 
@@ -124,7 +128,6 @@ inline std::ofstream setup_ppm6(const std::string& file_name, const Camera& cam)
     // }
 
     // open file
-
     std::ofstream output_file(file_name, std::ios::binary);
     if (!output_file.is_open()) {
         throw std::runtime_error("Error opening the file");
@@ -141,4 +144,12 @@ inline std::ofstream setup_ppm6(const std::string& file_name, const Camera& cam)
 
     std::cout << "Setup complete\n"; 
     return output_file;
+}
+
+inline void write_file(std::vector<Color>& framebuffer, const std::string& file_name, const Camera& cam) {
+    auto output_file = setup_ppm6(file_name, cam);
+    
+    for (const Color& pixel : framebuffer) {
+        write_color(output_file, pixel);
+    }
 }
