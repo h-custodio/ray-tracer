@@ -1,7 +1,8 @@
+#include <chrono>
+#include <iomanip> 
 
 #include "render.h"
 #include "sphere.h"
-
 
 inline void setup_preset_scene(HittableList& world) {
     auto ground_material = std::make_shared<Lambertian>(Color(0.5f, 0.5f, 0.5f));
@@ -49,19 +50,31 @@ int main() {
     HittableList world;
 
     Camera cam (16.0f / 9.0f,               // aspect_ratio 
-            1200,                           // image_width
+            800,                            // image_width
             20.0f,                          // vfov
-            Point3 (13.0f, 2.0f, 3.0f),     // camer_center
+            Point3 (13.0f, 2.0f, 3.0f),     // camera_center
             Point3(0,0,0), Vec3(0,1,0),     // lookat
             0.6f,                           // defocus_angle
             10.0f);                         // focus_distance
     
-    // samples_per_pixel = 500
-    // max_ray_depth = 50
-    Renderer ren(500, 50);
+    // samples_per_pixel = 250
+    // max_ray_depth = 25
+    Renderer ren(250, 25);
     setup_preset_scene(world);
 
+    auto start = std::chrono::steady_clock::now();
+
     ren.render(cam, world);
+
+    auto end = std::chrono::steady_clock::now();
+
+    auto elapsed = end - start;
+
+    std::cout << "Render Time: "
+        << std::fixed << std::setprecision(6)
+        << std::chrono::duration<double>(elapsed).count() << " s ("
+        << std::chrono::duration_cast<std::chrono::milliseconds>(elapsed).count() << " ms, "
+        << std::chrono::duration_cast<std::chrono::microseconds>(elapsed).count() << " us)\n";
 
     return 0;
 }
