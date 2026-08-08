@@ -56,7 +56,7 @@ int main() {
     HittableList world;
 
     Camera cam (16.0f / 9.0f,               // aspect_ratio 
-            800,                            // image_width
+            1200,                            // image_width
             20.0f,                          // vfov
             Point3 (13.0f, 2.0f, 3.0f),     // camera_center
             Point3(0,0,0), Vec3(0,1,0),     // lookat
@@ -65,7 +65,7 @@ int main() {
     
     // samples_per_pixel = 250
     // max_ray_depth = 25
-    Renderer ren(250, 25);
+    Renderer ren(500, 50);
 
     auto init_end = std::chrono::steady_clock::now();
 
