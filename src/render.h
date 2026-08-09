@@ -6,9 +6,6 @@
 #include "camera.h"
 #include "material.h"
 
-// decleration
-inline std::ofstream setup_ppm6(const std::string& file_name, const Camera& cam);
-
 class Renderer {
 private:
     // data member
@@ -53,7 +50,6 @@ private:
         return cam.get_camera_center() + (p[0] * cam.get_defocus_disk_horizontal()) + (p[1] * cam.get_defocus_disk_vertical());
     }
 
-
     Color random_sampling(int row, int col, const Camera& cam, const HittableList& world) const {
         Color color_accumulator;
         for (int i = 0; i < samples_per_pixel; i++) {
@@ -92,54 +88,22 @@ public:
         }
     }
 
-    std::vector<Color> render(const Camera& cam, const HittableList& world) const {        
-        std::vector <Color> framebuffer(cam.get_image_width() * cam.get_image_height());
+    std::vector<Color> render(const Camera& cam, const HittableList& world, int begin, int end) const {        
+        std::vector<Color> framebuffer(cam.get_image_width() * (end - begin));
         
         // render pixel grid
-        for (int row = 0; row < cam.get_image_height(); row++) {
-            std::clog << "\rScanlines remaining: " << (cam.get_image_height() - row) << ' ' << std::flush;
+        for (int row = begin; row < end; row++) {
+            // std::clog << "\rScanlines remaining: " << (end - row) << ' ' << std::flush;
 
             for (int col = 0; col < cam.get_image_width(); col++) {
 
-                framebuffer[row * cam.get_image_width() + col] = random_sampling(row, col, cam, world) / samples_per_pixel; 
+                framebuffer[(row-begin) * cam.get_image_width() + col] = random_sampling(row, col, cam, world) / samples_per_pixel; 
             }
         }
 
-        std::clog << "\rDone!                 \n";
+        // std::clog << "\rDone!                 \n";
 
         return framebuffer;
     }
 };
 
-inline std::ofstream setup_ppm6(const std::string& file_name, const Camera& cam) {
-    // check if the file already existss
-    if (std::filesystem::exists(file_name)) {
-        std::cerr << "Error: " << file_name << " already exists\n";
-    }
-
-    // open file
-    std::ofstream output_file(file_name, std::ios::binary);
-    if (!output_file.is_open()) {
-        throw std::runtime_error("Error opening the file");
-    }
-
-    // PPM header setup
-
-    // Prints the P6 header to signify ppm format 
-    output_file << "P6\n"; 
-    output_file << cam.get_image_width() << ' ' << cam.get_image_height() << "\n";
-
-    // The highest value a color channel can have. 256 possible intensities (0 to 255) for each color.
-    output_file << 255 << "\n";
-
-    std::cout << "Setup complete\n"; 
-    return output_file;
-}
-
-inline void write_file(std::vector<Color>& framebuffer, const std::string& file_name, const Camera& cam) {
-    auto output_file = setup_ppm6(file_name, cam);
-    
-    for (const Color& pixel : framebuffer) {
-        write_color(output_file, pixel);
-    }
-}

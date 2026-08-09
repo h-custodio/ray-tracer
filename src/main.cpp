@@ -1,6 +1,7 @@
 #include <chrono>
 #include <iomanip> 
 #include <vector>
+#include <thread>
 
 #include "render.h"
 #include "sphere.h"
@@ -47,6 +48,39 @@ inline void setup_preset_scene(HittableList& world) {
     world.add(std::make_shared<Sphere>(Point3(4.0f, 1.0f, 0.0f), 1.0f, material3));
 }
 
+inline std::ofstream setup_ppm6(const std::string& file_name, const Camera& cam) {
+    // check if the file already existss
+    // if (std::filesystem::exists(file_name)) {
+    //     std::cerr << "Error: " << file_name << " already exists\n";
+    // }
+
+    // open file
+    std::ofstream output_file(file_name, std::ios::binary);
+    if (!output_file.is_open()) {
+        throw std::runtime_error("Error opening the file");
+    }
+
+    // PPM header setup
+
+    // Prints the P6 header to signify ppm format 
+    output_file << "P6\n"; 
+    output_file << cam.get_image_width() << ' ' << cam.get_image_height() << "\n";
+
+    // The highest value a color channel can have. 256 possible intensities (0 to 255) for each color.
+    output_file << 255 << "\n";
+
+    return output_file;
+}
+
+inline void write_file(std::vector<Color>& framebuffer, const std::string& file_name, const Camera& cam) {
+    auto output_file = setup_ppm6(file_name, cam);
+    
+    for (const Color& pixel : framebuffer) {
+        write_color(output_file, pixel);
+    }
+}
+
+
 int main() {
     auto program_start = std::chrono::steady_clock::now();
 
@@ -56,7 +90,7 @@ int main() {
     HittableList world;
 
     Camera cam (16.0f / 9.0f,               // aspect_ratio 
-            1200,                            // image_width
+            1200,                           // image_width
             20.0f,                          // vfov
             Point3 (13.0f, 2.0f, 3.0f),     // camera_center
             Point3(0,0,0), Vec3(0,1,0),     // lookat
@@ -67,6 +101,19 @@ int main() {
     // max_ray_depth = 25
     Renderer ren(500, 50);
 
+
+    // multithread initialization & setup
+    std::vector<std::thread> threads;
+    
+    int data_size = cam.get_image_height();
+    int num_threads = std::thread::hardware_concurrency() * 1.75;
+    num_threads = (num_threads > 0) ? num_threads : 1;
+    int chunk_size =  (data_size + num_threads - 1) / num_threads;
+
+    std::vector<std::vector<Color>> frambuffer_segments(num_threads);
+
+    std::vector<Color> full_framebuffer;
+
     auto init_end = std::chrono::steady_clock::now();
 
     auto scene_setup_start = std::chrono::steady_clock::now();
@@ -74,11 +121,35 @@ int main() {
     auto scene_setup_end = std::chrono::steady_clock::now();
 
     auto render_start = std::chrono::steady_clock::now();
-    auto framebuffer = ren.render(cam, world);
+
+    for (int i = 0; i < num_threads; ++i) {
+        threads.emplace_back([&, i] {
+            int begin = i * chunk_size;
+            int end = std::min(begin + chunk_size, data_size);
+
+            if (begin >= end) {
+                return;
+            }
+
+            frambuffer_segments[i] = ren.render(cam, world, begin, end);
+        });
+    }
+
+    for (auto& t : threads) {
+        t.join();
+    }
+
     auto render_end = std::chrono::steady_clock::now();
 
     auto write_output_start = std::chrono::steady_clock::now();
-    write_file(framebuffer, "display.ppm", cam);
+
+    for (auto& chunk : frambuffer_segments) {
+        full_framebuffer.insert(full_framebuffer.end(), chunk.begin(), chunk.end());
+    }
+
+    write_file(full_framebuffer, file_name, cam);
+
+
     auto write_output_end = std::chrono::steady_clock::now();
 
 
@@ -123,6 +194,7 @@ int main() {
         << std::chrono::duration_cast<std::chrono::microseconds>(program_elapsed).count() << " us)\n";
     
     /// ========== Runtime Fractions ========== //
+
     double program_seconds = std::chrono::duration<double>(program_elapsed).count();
 
     double init_seconds = std::chrono::duration<double>(init_elapsed).count();
