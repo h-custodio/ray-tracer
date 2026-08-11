@@ -8,7 +8,7 @@
 
 inline void setup_preset_scene(HittableList& world) {
     auto ground_material = std::make_shared<Lambertian>(Color(0.5f, 0.5f, 0.5f));
-    world.add(make_shared<Sphere>(Point3(0.0f, -1000.0f, 0.0f), 1000.0f, ground_material));
+    world.add(std::make_shared<Sphere>(Point3(0.0f, -1000.0f, 0.0f), 1000.0f, ground_material));
 
     for (int a = -11; a < 11; a++) {
         for (int b = -11; b < 11; b++) {
