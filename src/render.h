@@ -88,16 +88,17 @@ public:
         }
     }
 
-    std::vector<Color> render(const Camera& cam, const HittableList& world, int begin, int end) const {        
-        std::vector<Color> framebuffer(cam.get_image_width() * (end - begin));
+    std::vector<Color> render(const Camera& cam, const HittableList& world, int begin, int end) const {
+        auto cam_width = cam.get_image_width();        
+        std::vector<Color> framebuffer(cam_width * (end - begin));
         
         // render pixel grid
         for (int row = begin; row < end; row++) {
             // std::clog << "\rScanlines remaining: " << (end - row) << ' ' << std::flush;
 
-            for (int col = 0; col < cam.get_image_width(); col++) {
+            for (int col = 0; col < cam_width; col++) {
 
-                framebuffer[(row-begin) * cam.get_image_width() + col] = random_sampling(row, col, cam, world) / samples_per_pixel; 
+                framebuffer[(row-begin) * cam_width + col] = random_sampling(row, col, cam, world) / samples_per_pixel; 
             }
         }
 
