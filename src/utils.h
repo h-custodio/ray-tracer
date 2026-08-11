@@ -20,7 +20,8 @@ inline float degrees_to_radians(float degrees) {
 // generate random float from [min, max)
 float generate_random(float min, float max) {
     // static used to initialized once, reused on later calls
-    static std::mt19937 gen;
+    // putting seed in for consistency when testing and timing
+    thread_local std::mt19937 gen(295);
 
     std::uniform_real_distribution<float> dist(min, max); 
 

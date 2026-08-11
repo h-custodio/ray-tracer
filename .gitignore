@@ -72,3 +72,4 @@ Testing/
 .vscode/
 .DS_Store
 *.ppm
+*.dSYM/

@@ -6,15 +6,22 @@
 
 #include "utils.h"
 
+#include "external/version2-master/vectorclass.h"
+
 struct Vec3 {
     // data member
-    float vec[3];
+    Vec4f vec;
 
     // default constructor, xyz are 0
     Vec3() : vec {} {}
 
     // constructor
-    Vec3(float x, float y, float z) : vec(x, y, z) {}
+    // fourth data member is padding to align with Vec4f
+    Vec3(float x, float y, float z) : vec(x, y, z, 0.0f) {}
+
+    // constructor
+    // takes in another Vec3
+    Vec3(const Vec4f& v) : vec(v[0], v[1], v[2], 0.0f) {}
 
     // access xyz, read only (easier readability)
     float x() const { return vec[0]; }
@@ -29,52 +36,47 @@ struct Vec3 {
 
     // negates the vector and returns a object
     inline Vec3 operator-() const {
-        return Vec3(-vec[0], -vec[1], -vec[2]);
+        return Vec3(-vec);
     }
 
     // in-place vector addition    
     inline Vec3& operator+=(const Vec3& other) {
-        vec[0] += other[0];
-        vec[1] += other[1];
-        vec[2] += other[2];
+        vec += other.vec;
         return *this;
     }
 
     // in-place vector subtraction    
     inline Vec3& operator-=(const Vec3& other) {
-        vec[0] -= other[0];
-        vec[1] -= other[1];
-        vec[2] -= other[2];
+        vec -= other.vec;
         return *this;
     }
 
     // in-place scalar multiplication
     inline Vec3& operator*=(float scalar) {
-        vec[0] *= scalar; 
-        vec[1] *= scalar; 
-        vec[2] *= scalar; 
+        vec *= scalar; 
         return *this;
     }
 
     // in-place scalar division
     inline Vec3& operator/=(float scalar) {
         assert(scalar != 0.0f);
-        return *this *= (1.0f / scalar);
+        vec *= (1.0f / scalar);
+        return *this;
     }
 
     // returns magnitude squared
     inline float magnitude_squared() const {
-        return (vec[0] * vec[0] + vec[1] * vec[1] + vec[2] * vec[2]);
+        return horizontal_add(vec * vec);
     }
 
     // returns magnitude(aka length) which is v = sqrt(x^2 + y^2 + z^2)
     inline float magnitude() const {
-        return std::sqrt(vec[0] * vec[0] + vec[1] * vec[1] + vec[2] * vec[2]);
+        return std::sqrt(magnitude_squared());
     }
 
     // return true if the vector is close to zero in all dimensions
     bool near_zero() const {
-        auto s = 1e-8f;
+        auto constexpr s = 1e-8f;
         return (std::fabs(vec[0]) < s) && (std::fabs(vec[1]) < s) && (std::fabs(vec[2]) < s);
     }
 };
@@ -82,17 +84,17 @@ struct Vec3 {
 // ========== Operators ========== //
 
 inline Vec3 operator+(const Vec3& a, const Vec3& b) {
-    return Vec3(a.x() + b.x(), a.y() + b.y(), a.z() + b.z()); 
+    return Vec3(a.vec + b.vec); 
 }
 
 // vector x vector
 inline Vec3 operator*(const Vec3& a, const Vec3& b) {
-    return Vec3(a.x() * b.x(), a.y() * b.y(), a.z() * b.z()); 
+    return Vec3(a.vec * b.vec);
 }
 
 // vector x scalar
 inline Vec3 operator*(const Vec3& a, float scalar) {
-    return Vec3(scalar * a.x(), scalar * a.y(), scalar * a.z()); 
+    return Vec3(scalar * a.vec); 
 }
 
 // scalar x vector
@@ -101,7 +103,7 @@ inline Vec3 operator*(float scalar, const Vec3& a) {
 }
 
 inline Vec3 operator-(const Vec3& a, const Vec3& b) {
-    return Vec3(a.x() - b.x(), a.y() - b.y(), a.z() - b.z()); 
+    return Vec3(a.vec - b.vec); 
 }
 
 inline Vec3 operator/(const Vec3& a, float scalar) {
@@ -118,7 +120,7 @@ inline std::ostream& operator<<(std::ostream& out, const Vec3& a) {
 
 // a . b = ax * bx + ay * by + az * bz 
 inline float dot_product(const Vec3& a, const Vec3& b) {
-    return a.x() * b.x() + a.y() * b.y() + a.z() * b.z();
+    return horizontal_add(a.vec * b.vec);
 }
 
 // a x b = (ay * bz - az * by, az * bx - ax * bz, ax * by - ay * bx)
