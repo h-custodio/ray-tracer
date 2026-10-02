@@ -286,11 +286,7 @@ display.ppm
 
 The image is written using the binary PPM `P6` format.
 
-Most image viewers do not handle PPM particularly well, so the output can be converted to a more common format such as PNG using ImageMagick:
-
-```bash
-magick display.ppm display.png
-```
+Most image viewers do not handle PPM particularly well. I used: https://bytes.usc.edu/~saty/tools/PGMViewer/viewer.html)
 
 ---
 
