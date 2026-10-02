@@ -1,6 +1,6 @@
 # CPU Ray Tracer
 
-A from-scratch C++23 CPU ray tracer focused on physically-inspired rendering, object/material abstraction, multithreaded rendering, SIMD-aware vector math, and performance analysis.
+A C++ CPU ray tracer adapted from 'Ray Tracing In One Weekend' by Peter Shirley. Focused on physically-inspired rendering, object/material abstraction, multithreaded rendering, SIMD-aware vector math, and performance analysis.
 
 The project started as a straightforward single-threaded ray tracer and was iteratively optimized using profiling and low-level performance analysis. The final implementation combines recursive ray tracing with **49 worker threads** and SIMD-backed vector operations, reducing render time from approximately **1069 s to 173 s** on the development machine — a **~6.17× speedup**.
 
