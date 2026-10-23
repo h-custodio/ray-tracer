@@ -1,8 +1,8 @@
 # CPU Ray Tracer
 
-A C++ CPU ray tracer adapted from 'Ray Tracing In One Weekend' by Peter Shirley. Focused on physically-inspired rendering, object/material abstraction, multithreaded rendering, SIMD-aware vector math, and performance analysis.
+A C++ CPU ray tracer adapted from 'Ray Tracing In One Weekend' by Peter Shirley. Focused on physically-inspired rendering, object/material abstraction, multithreaded rendering, exploratory vector data representation, and performance analysis.
 
-The project started as a straightforward single-threaded ray tracer and was iteratively optimized using profiling and low-level performance analysis. The final implementation combines recursive ray tracing with **49 worker threads** and SIMD-backed vector operations, reducing render time from approximately **1069 s to 173 s** on the development machine — a **~6.17× speedup**.
+The project started as a straightforward single-threaded ray tracer and was iteratively optimized using profiling and low-level performance analysis. In the benchmark configuration, the implementation used **49 worker threads**. The project also began exploring a possible SIMD implementation by replacing the vector data representation with types from Agner Fog's Vector Class Library, but SIMD has not yet been successfully implemented. On the development machine, the completed optimizations reduced render time from approximately **1069 s to 173 s** — a **~6.17× speedup**. The worker count and timing results are hardware- and configuration-dependent.
 
 > **Key engineering focus:** understanding where CPU time is actually spent, profiling the hot path, and applying parallelism and low-level optimization based on measured bottlenecks rather than assumptions.
 
@@ -18,7 +18,7 @@ The project was developed with a particular emphasis on the performance characte
 
 - Profiling with Linux `perf`
 - Multithreaded image rendering
-- SIMD-backed vector operations
+- Exploration of SIMD-friendly vector data types
 - Cache and branch-miss analysis
 - Recursive ray tracing
 - Object-oriented scene/material abstractions
@@ -81,7 +81,7 @@ The renderer was first profiled as a single-threaded CPU implementation. The ini
 | Baseline | **1069.16 s** | — |
 | Multithreading — 28 threads | **182.71 s** | **5.85×** |
 | Multithreading — 49 threads | **177.10 s** | **6.04×** |
-| Multithreading + SIMD-backed `Vec3` | **173.15 s** | **6.17×** |
+| Multithreading + experimental `Vec4f`-based `Vec3` representation | **173.15 s** | **6.17×** |
 
 Benchmarks were averaged across four runs on the development machine.
 
@@ -107,17 +107,13 @@ The image was partitioned into row ranges and distributed across worker threads.
 
 Testing different worker counts showed that simply matching the processor count was not optimal. A configuration around **1.75× the logical processor count** performed best in the tested environment, likely because finer-grained partitioning helped distribute uneven workloads across the scene.
 
-### SIMD-aware vector math
+### SIMD exploration
 
-The `Vec3` implementation was redesigned around a padded 4-component representation backed by Agner Fog's **Vector Class Library (`Vec4f`)**.
+The `Vec3` implementation began an exploratory redesign around a padded 4-component representation backed by Agner Fog's **Vector Class Library (`Vec4f`)**. This replaces the underlying vector data type, but it does not yet constitute a successful SIMD implementation.
 
-This was intended to improve the compiler's ability to use SIMD-friendly operations for vector arithmetic occurring heavily inside intersection calculations.
+The goal is to investigate whether a SIMD-friendly representation can improve vector arithmetic in the intersection path. The compiler is not guaranteed to generate SIMD instructions from this representation, and the project has not yet validated a successful SIMD implementation or performance benefit.
 
-The SIMD-backed implementation provided a smaller but measurable improvement after multithreading:
-
-**177.10 s → 173.15 s**
-
-The optimization also demonstrated an important tradeoff: padding the vector representation increased L1 data-cache pressure. This made the change a useful case study in how an optimization at the instruction level can introduce memory-system costs.
+The current result is therefore an ongoing exploration rather than a completed optimization. Successfully implementing and validating SIMD is a planned next step. The use of SIMD instructions will depend on the compiler, target architecture, and build flags. The `-march=native` flag in the example build enables the compiler to target the capabilities of the machine performing the build; it does not make the resulting executable universally portable.
 
 ---
 
@@ -162,7 +158,7 @@ src/
 ├── render.h        # Rendering loop and recursive ray-color calculation
 ├── camera.h        # Camera geometry, viewport, sampling, defocus
 ├── ray.h           # Ray representation and ray evaluation
-├── vec3.h          # Vector/point math and SIMD-backed operations
+├── vec3.h          # Vector/point math and SIMD exploration
 ├── color.h         # Color representation, gamma correction, PPM output
 ├── hittable.h      # Scene-object interface and hit records
 ├── sphere.h        # Sphere-ray intersection implementation
@@ -278,13 +274,13 @@ Then:
 
 ## Output
 
-Running the program produces:
+Running the program produces a file named:
 
 ```text
 display.ppm
 ```
 
-The image is written using the binary PPM `P6` format.
+The image is written using the binary PPM `P6` format in the program's current working directory. For example, running `./raytracer` from `src` writes `src/display.ppm`, while running `./src/raytracer` from the repository root writes `display.ppm` in the repository root.
 
 Most image viewers do not handle PPM particularly well. I used: https://bytes.usc.edu/~saty/tools/PGMViewer/viewer.html)
 
@@ -356,7 +352,7 @@ The implementation goes beyond a basic tutorial renderer by using the project as
 
 - CPU performance profiling
 - Parallel workload decomposition
-- SIMD-aware data representation
+- Exploration of SIMD-friendly data representation
 - Cache behavior
 - Compiler optimization
 - Recursive rendering algorithms
